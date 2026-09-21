@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRAFFIC INFORMATION CENTER (TIC) - Jalan Tol Kayuagung - Palembang</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            900: '#070a14',
+                            800: '#0b1021',
+                            700: '#131b36',
+                            600: '#1c284f',
+                            500: '#28386b'
+                        },
+                        brand: {
+                            blue: '#1d4ed8',
+                            cyan: '#06b6d4',
+                            amber: '#f59e0b',
+                            emerald: '#10b981',
+                            rose: '#ef4444'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #070a14;
+            color: #e2e8f0;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b1021;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1c284f;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #28386b;
+        }
+        .leaflet-container {
+            background: #0b1021 !important;
+        }
+    </style>
+</head>
+<body class="bg-navy-900 text-slate-200 min-h-screen flex flex-col p-2 md:p-4 gap-4">
+
+    <!-- HEADER BAR -->
+    <header class="bg-navy-800 border border-slate-800 rounded-xl p-3 md:p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 shadow-lg">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-blue-900/40">
+                <i class="fa-solid me-0.5 fa-road"></i>
+            </div>
+            <div>
+                <h1 id="header-title" class="text-base md:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                    TRAFFIC INFORMATION CENTER (TIC) <span class="text-blue-400 font-normal text-sm md:text-base">Jalan Tol Kayuagung - Palembang</span>
+                </h1>
+                <p id="header-subtitle" class="text-xs text-slate-400">Development BY Operasi PT. Waskita Sriwijaya Tol</p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 md:gap-3 text-xs w-full lg:w-auto justify-start lg:justify-end">
+            <!-- Online Status -->
+            <div class="flex items-center gap-2 bg-emerald-950/60 border border-emerald-800/60 px-3 py-1.5 rounded-lg text-emerald-400 font-semibold">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <span>SISTEM ONLINE</span>
+            </div>
+
+            <!-- Weather -->
+            <div id="weather-badge" class="flex items-center gap-2 bg-navy-700 border border-slate-700 px-3 py-1.5 rounded-lg text-amber-300 font-medium">
+                <i class="fa-solid fa-sun text-amber-400"></i>
+                <span id="weather-text">Cerah, 31°C</span>
+            </div>
+
+            <!-- Real-time Clock -->
+            <div class="flex items-center gap-2 bg-navy-700 border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 font-mono">
+                <i class="fa-regular fa-clock text-blue-400"></i>
+                <span id="live-clock">12:00:00 WIB - Senin, 21 Sep 2026</span>
+            </div>
+
+            <!-- Edit Header Button -->
+            <button onclick="openModal('headerModal')" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-medium px-3 py-1.5 rounded-lg transition text-xs shadow">
+                <i class="fa-solid fa-gear"></i> Edit Header & KPI
+            </button>
+        </div>
+    </header>
+
+    <!-- TOP KPI CARDS GRID -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <!-- Card 1: Total Kendaraan -->
+        <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 flex justify-between items-start shadow-md relative overflow-hidden">
+            <div>
+                <p class="text-xs font-medium text-slate-400 mb-1">Total Kendaraan / Jam</p>
+                <h3 id="kpi-volume" class="text-2xl md:text-3xl font-extrabold text-white">380</h3>
+                <p id="kpi-volume-status" class="text-xs font-semibold text-emerald-400 mt-2 flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-trend-up"></i> Volume Normal
+                </p>
+            </div>
+            <div class="w-10 h-10 rounded-lg bg-blue-950/80 border border-blue-800/50 text-blue-400 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-car"></i>
+            </div>
+        </div>
+
+        <!-- Card 2: Kecepatan Rata-Rata -->
+        <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 flex justify-between items-start shadow-md relative overflow-hidden">
+            <div>
+                <p class="text-xs font-medium text-slate-400 mb-1">Kecepatan Rata-Rata</p>
+                <h3 id="kpi-speed" class="text-2xl md:text-3xl font-extrabold text-white">80 <span class="text-sm font-normal text-slate-400">km/jam</span></h3>
+                <p id="kpi-speed-status" class="text-xs font-semibold text-amber-400 mt-2 flex items-center gap-1">
+                    <i class="fa-solid fa-triangle-exclamation"></i> -3.1% padat merayap
+                </p>
+            </div>
+            <div class="w-10 h-10 rounded-lg bg-amber-950/80 border border-amber-800/50 text-amber-400 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-gauge-high"></i>
+            </div>
+        </div>
+
+        <!-- Card 3: Tingkat Pelayanan (LOS) -->
+        <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 flex justify-between items-start shadow-md relative overflow-hidden">
+            <div>
+                <p class="text-xs font-medium text-slate-400 mb-1">Tingkat Pelayanan (LOS)</p>
+                <h3 id="kpi-los" class="text-2xl md:text-3xl font-extrabold text-emerald-400">Kategori B</h3>
+                <p id="kpi-los-status" class="text-xs font-semibold text-emerald-400 mt-2 flex items-center gap-1">
+                    <i class="fa-solid fa-check-circle"></i> Arus Stabil / Lancar
+                </p>
+            </div>
+            <div class="w-10 h-10 rounded-lg bg-emerald-950/80 border border-emerald-800/50 text-emerald-400 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+        </div>
+
+        <!-- Card 4: Insiden Aktif -->
+        <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 flex justify-between items-start shadow-md relative overflow-hidden">
+            <div>
+                <p class="text-xs font-medium text-slate-400 mb-1">Insiden Aktif Tahun 2026</p>
+                <h3 id="kpi-incident" class="text-2xl md:text-3xl font-extrabold text-rose-500">3 Lokasi</h3>
+                <p id="kpi-incident-detail" class="text-[11px] font-medium text-slate-300 mt-2">
+                    Faktor Penyebab 2026: 6 Manusia, 0 Jalan, 0 Kendaraan<br>
+                    <span class="text-slate-400 font-mono">LR : 3, LB : 1, MD : 1</span>
+                </p>
+            </div>
+            <div class="w-10 h-10 rounded-lg bg-rose-950/80 border border-rose-800/50 text-rose-400 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT GRID (3 COLUMNS) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+
+        <!-- LEFT COLUMN: Satellite Map & Incident Live Feed -->
+        <div class="lg:col-span-4 flex flex-col gap-4">
+            
+            <!-- Map Container -->
+            <div class="bg-navy-800 border border-slate-800 rounded-xl p-3 flex flex-col gap-2 shadow-md">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-blue-400"></i> Peta Koridor Satelit Tol Kayuagung - Palembang
+                    </h2>
+                    <div class="flex gap-1.5 text-[11px]">
+                        <button onclick="toggleMapLayer()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-2 py-0.5 rounded flex items-center gap-1">
+                            <i class="fa-solid fa-layer-group"></i> Layer
+                        </button>
+                        <button onclick="resetMapView()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-2 py-0.5 rounded flex items-center gap-1">
+                            <i class="fa-solid fa-arrows-to-dot"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Leaflet Canvas -->
+                <div id="map" class="h-80 w-full rounded-lg border border-slate-700/80 overflow-hidden relative"></div>
+
+                <!-- Legend -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-1 px-1 text-[11px]">
+                    <span class="flex items-center gap-1.5 text-slate-300"><span class="w-3 h-1 bg-emerald-500 rounded-full"></span> Lancar (KM 0-18)</span>
+                    <span class="flex items-center gap-1.5 text-slate-300"><span class="w-3 h-1 bg-amber-500 rounded-full"></span> Padat (KM 18-32)</span>
+                    <span class="flex items-center gap-1.5 text-slate-300"><span class="w-3 h-1 bg-rose-500 rounded-full"></span> Bencana/Kerja</span>
+                </div>
+            </div>
+
+            <!-- Live Laporan Kejadian Card -->
+            <div class="bg-navy-800 border border-slate-800 rounded-xl p-3 flex flex-col gap-3 shadow-md flex-1">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-bullhorn text-amber-400"></i> LAPORAN KEJADIAN LIVE
+                    </h2>
+                    <div class="flex gap-1 text-[11px]">
+                        <button onclick="openModal('reportModal')" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-2.5 py-1 rounded shadow">
+                            + Laporan
+                        </button>
+                        <button onclick="resetIncidents()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-2 py-1 rounded">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex flex-wrap gap-1 text-[11px]" id="incident-filters">
+                    <button onclick="filterIncidents('Semua')" class="filter-btn active bg-blue-600 text-white px-2.5 py-0.5 rounded-full font-medium">Semua</button>
+                    <button onclick="filterIncidents('Kecelakaan')" class="filter-btn bg-navy-700 hover:bg-navy-600 text-slate-300 px-2.5 py-0.5 rounded-full">Kecelakaan</button>
+                    <button onclick="filterIncidents('Banjir')" class="filter-btn bg-navy-700 hover:bg-navy-600 text-slate-300 px-2.5 py-0.5 rounded-full">Banjir</button>
+                    <button onclick="filterIncidents('Kebakaran Hutan')" class="filter-btn bg-navy-700 hover:bg-navy-600 text-slate-300 px-2.5 py-0.5 rounded-full">Kebakaran Hutan</button>
+                </div>
+
+                <!-- Feed List -->
+                <div id="incident-feed" class="flex flex-col gap-2 overflow-y-auto max-h-56 pr-1">
+                    <!-- Dynamic rendering via JS -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CENTER COLUMN: Service Summary & Daily Details Table -->
+        <div class="lg:col-span-5 flex flex-col gap-4">
+
+            <!-- Traffic Service Summary Grid -->
+            <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 shadow-md">
+                <h2 class="text-xs font-bold text-white uppercase tracking-wider mb-3">
+                    Monitoring and Management of Toll Road Traffic Services
+                </h2>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- Service 1 -->
+                    <div class="bg-navy-700/60 border border-slate-700/80 rounded-xl p-3 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-blue-900/60 text-blue-400 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fa-solid fa-truck-pickup"></i>
+                        </div>
+                        <div>
+                            <p class="text-[11px] font-medium text-slate-400">Penderekan</p>
+                            <h4 id="count-penderekan" class="text-sm font-bold text-white">5 Layanan</h4>
+                        </div>
+                    </div>
+
+                    <!-- Service 2 -->
+                    <div class="bg-navy-700/60 border border-slate-700/80 rounded-xl p-3 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-900/60 text-emerald-400 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fa-solid fa-gas-pump"></i>
+                        </div>
+                        <div>
+                            <p class="text-[11px] font-medium text-slate-400">Habis BBM</p>
+                            <h4 id="count-bbm" class="text-sm font-bold text-white">3 Layanan</h4>
+                        </div>
+                    </div>
+
+                    <!-- Service 3 -->
+                    <div class="bg-navy-700/60 border border-slate-700/80 rounded-xl p-3 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-amber-900/60 text-amber-400 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fa-solid fa-compact-disc"></i>
+                        </div>
+                        <div>
+                            <p class="text-[11px] font-medium text-slate-400">Kendala Roda</p>
+                            <h4 id="count-roda" class="text-sm font-bold text-white">24 Layanan</h4>
+                        </div>
+                    </div>
+
+                    <!-- Service 4 -->
+                    <div class="bg-navy-700/60 border border-slate-700/80 rounded-xl p-3 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-rose-900/60 text-rose-400 flex items-center justify-center text-lg flex-shrink-0">
+                            <i class="fa-solid fa-wrench"></i>
+                        </div>
+                        <div>
+                            <p class="text-[11px] font-medium text-slate-400">Kendala Mesin</p>
+                            <h4 id="count-mesin" class="text-sm font-bold text-white">8 Layanan</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rincian Harian Pelayanan Lalu Lintas Table -->
+            <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 shadow-md flex-1 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                        <h2 class="text-xs font-bold text-white uppercase tracking-wider">
+                            RINCIAN HARIAN PELAYANAN LALU LINTAS
+                        </h2>
+                        <div class="flex items-center gap-2">
+                            <button onclick="syncTotals()" class="bg-blue-900/50 hover:bg-blue-800/80 text-blue-300 border border-blue-700/50 text-[11px] font-medium px-2.5 py-1 rounded transition flex items-center gap-1">
+                                <i class="fa-solid fa-rotate"></i> Sync Total
+                            </button>
+                            <button onclick="openModal('serviceModal')" class="bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-semibold px-3 py-1 rounded transition shadow">
+                                + Input Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-navy-700/80 text-slate-400 uppercase text-[10px] font-semibold tracking-wider">
+                                <tr>
+                                    <th class="p-2 text-center">NO</th>
+                                    <th class="p-2">TANGGAL</th>
+                                    <th class="p-2 text-center">PENDEREKAN</th>
+                                    <th class="p-2 text-center">HABIS BBM</th>
+                                    <th class="p-2 text-center">KENDALA RODA</th>
+                                    <th class="p-2 text-center">KENDALA MESIN</th>
+                                    <th class="p-2 text-center">AKSI</th>
+                                </tr>
+                            </thead>
+                            <tbody id="service-table-body" class="divide-y divide-slate-800 text-slate-300 font-mono">
+                                <!-- Dynamic JS Population -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="text-[11px] text-slate-500 mt-2 text-right">
+                    Menampilkan 5 data harian terbaru
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Analytics Charts -->
+        <div class="lg:col-span-3 flex flex-col gap-4">
+
+            <!-- Bar Chart: Dashboard Analitik Kecelakaan -->
+            <div class="bg-navy-800 border border-slate-800 rounded-xl p-3 shadow-md flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-column text-blue-400"></i> DASHBOARD ANALITIK KECELAKAAN
+                    </h2>
+                    <div class="flex gap-1 text-[10px]">
+                        <button onclick="openModal('chartBarModal')" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-0.5 rounded">Edit Data</button>
+                        <button onclick="resetBarChart()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-1.5 py-0.5 rounded">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Canvas -->
+                <div class="h-44 w-full relative">
+                    <canvas id="barChart"></canvas>
+                </div>
+
+                <!-- YoY Note -->
+                <p class="text-[10px] text-emerald-400 font-medium text-center flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-arrow-down"></i> Penurunan YoY: -89.5% (2021 vs 2026)
+                </p>
+            </div>
+
+            <!-- Pie Chart: Persentase Golongan Kendaraan -->
+            <div class="bg-navy-800 border border-slate-800 rounded-xl p-3 shadow-md flex flex-col gap-2 flex-1">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-pie text-cyan-400"></i> PERSENTASE GOLONGAN KENDARAAN
+                    </h2>
+                    <div class="flex gap-1 text-[10px]">
+                        <button onclick="openModal('chartPieModal')" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-0.5 rounded">Edit Data</button>
+                        <button onclick="resetPieChart()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-1.5 py-0.5 rounded">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Pie Canvas -->
+                <div class="h-44 w-full relative flex justify-center items-center my-auto">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODALS SECTION -->
+
+    <!-- Modal 1: Edit Header & KPI -->
+    <div id="headerModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-navy-800 border border-slate-700 rounded-xl w-full max-w-md p-5 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4 border-b border-slate-700 pb-2">Edit Header & KPI System</h3>
+            <form id="headerForm" onsubmit="saveHeaderConfig(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">Judul Utama</label>
+                    <input type="text" id="input-title" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500" value="TRAFFIC INFORMATION CENTER (TIC)">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Sub-Judul Tol</label>
+                    <input type="text" id="input-subtitle" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500" value="Jalan Tol Kayuagung - Palembang">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Cuaca</label>
+                        <input type="text" id="input-weather" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500" value="Cerah, 31°C">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Vol Kendaraan/Jam</label>
+                        <input type="number" id="input-vol" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500" value="380">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Kecepatan (km/jam)</label>
+                        <input type="number" id="input-speed" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500" value="80">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Kategori LOS</label>
+                        <input type="text" id="input-los" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500" value="Kategori B">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeModal('headerModal')" class="bg-navy-700 hover:bg-navy-600 text-slate-300 px-3 py-1.5 rounded">Batal</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-1.5 rounded">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Input Service Data -->
+    <div id="serviceModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-navy-800 border border-slate-700 rounded-xl w-full max-w-md p-5 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4 border-b border-slate-700 pb-2">+ Input Data Pelayanan Lalu Lintas</h3>
+            <form id="serviceForm" onsubmit="addServiceData(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">Tanggal</label>
+                    <input type="date" id="input-service-date" required class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Penderekan</label>
+                        <input type="number" min="0" id="input-penderekan" value="0" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Habis BBM</label>
+                        <input type="number" min="0" id="input-bbm" value="0" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Kendala Roda</label>
+                        <input type="number" min="0" id="input-roda" value="0" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Kendala Mesin</label>
+                        <input type="number" min="0" id="input-mesin" value="0" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeModal('serviceModal')" class="bg-navy-700 hover:bg-navy-600 text-slate-300 px-3 py-1.5 rounded">Batal</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-1.5 rounded">Tambah Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Input Live Report Kejadian -->
+    <div id="reportModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-navy-800 border border-slate-700 rounded-xl w-full max-w-md p-5 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4 border-b border-slate-700 pb-2">+ Tambah Laporan Kejadian Live</h3>
+            <form id="reportForm" onsubmit="addIncidentReport(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">Judul Kejadian</label>
+                    <input type="text" id="input-incident-title" placeholder="cth: Kecelakaan Beruntun 2 Mobil" required class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Kategori</label>
+                    <select id="input-incident-cat" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                        <option value="Kecelakaan">Kecelakaan</option>
+                        <option value="Banjir">Banjir</option>
+                        <option value="Kebakaran Hutan">Kebakaran Hutan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Lokasi KM & Jalur</label>
+                    <input type="text" id="input-incident-loc" placeholder="cth: Tol KM 32 Jalur A (Dekat Kramasan)" required class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Status Keadaan</label>
+                        <select id="input-incident-status" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                            <option value="Kritis">Kritis</option>
+                            <option value="Penanganan">Penanganan</option>
+                            <option value="Selesai">Selesai</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Status Petugas</label>
+                        <input type="text" id="input-incident-officer" placeholder="cth: Petugas Tiba" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeModal('reportModal')" class="bg-navy-700 hover:bg-navy-600 text-slate-300 px-3 py-1.5 rounded">Batal</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-1.5 rounded">Kirim Laporan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Edit Bar Chart Data -->
+    <div id="chartBarModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-navy-800 border border-slate-700 rounded-xl w-full max-w-sm p-5 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4 border-b border-slate-700 pb-2">Edit Data Analitik Kecelakaan</h3>
+            <div id="bar-inputs" class="space-y-2 text-xs max-h-60 overflow-y-auto pr-1"></div>
+            <div class="flex justify-end gap-2 pt-3 border-t border-slate-700 mt-3">
+                <button type="button" onclick="closeModal('chartBarModal')" class="bg-navy-700 text-slate-300 px-3 py-1.5 rounded text-xs">Batal</button>
+                <button type="button" onclick="saveBarChartData()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-xs">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 5: Edit Pie Chart Data -->
+    <div id="chartPieModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-navy-800 border border-slate-700 rounded-xl w-full max-w-sm p-5 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4 border-b border-slate-700 pb-2">Edit Golongan Kendaraan</h3>
+            <div id="pie-inputs" class="space-y-2 text-xs max-h-60 overflow-y-auto pr-1"></div>
+            <div class="flex justify-end gap-2 pt-3 border-t border-slate-700 mt-3">
+                <button type="button" onclick="closeModal('chartPieModal')" class="bg-navy-700 text-slate-300 px-3 py-1.5 rounded text-xs">Batal</button>
+                <button type="button" onclick="savePieChartData()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-xs">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-xl text-xs font-medium translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toast-message">Notifikasi</span>
+    </div>
+
+    <script>
+        /* ----------------------------------------------------
+           1. INITIAL DATA STATE & STORE
+        ---------------------------------------------------- */
+        let serviceData = [
+            { id: 1, date: '20/09/2026', penderekan: 8, bbm: 2, roda: 2, mesin: 1 },
+            { id: 2, date: '19/09/2026', penderekan: 2, bbm: 8, roda: 5, mesin: 2 },
+            { id: 3, date: '18/09/2026', penderekan: 8, bbm: 8, roda: 8, mesin: 0 },
+            { id: 4, date: '17/09/2026', penderekan: 8, bbm: 0, roda: 1, mesin: 2 },
+            { id: 5, date: '16/09/2026', penderekan: 3, bbm: 1, roda: 8, mesin: 1 },
+        ];
+
+        let incidents = [
+            {
+                id: 1,
+                title: 'Kecelakaan Beruntun 2 Mobil',
+                category: 'Kecelakaan',
+                location: 'Tol KM 32 Jalur A (Dekat Kramasan)',
+                timeAgo: '5 Mnt Lalu',
+                status: 'Kritis',
+                statusColor: 'bg-rose-500/20 text-rose-400 border-rose-500/40',
+                officer: 'Petugas Tiba',
+                lat: -3.125,
+                lng: 104.750
+            },
+            {
+                id: 2,
+                title: 'Genangan Air Akibat Hujan Deras',
+                category: 'Banjir',
+                location: 'Tol KM 14 Jalur B',
+                timeAgo: '25 Mnt Lalu',
+                status: 'Penanganan',
+                statusColor: 'bg-amber-500/20 text-amber-400 border-amber-500/40',
+                officer: 'Pembersihan Drainase',
+                lat: -3.200,
+                lng: 104.800
+            }
+        ];
+
+        let barChartData = [38, 56, 48, 24, 24, 17, 3];
+        const barLabels = ['2020', '2021', '2022', '2023', '2024', '2025', '2026'];
+
+        let pieChartData = [65, 15, 10, 6, 4];
+        const pieLabels = ['Golongan 1', 'Golongan 2', 'Golongan 3', 'Golongan 4', 'Golongan 5'];
+
+        let activeFilter = 'Semua';
+        let barChartInstance = null;
+        let pieChartInstance = null;
+        let mapInstance = null;
+        let activeTileLayer = null;
+        let mapLayers = {};
+
+        /* ----------------------------------------------------
+           2. REALTIME CLOCK & UTILS
+        ---------------------------------------------------- */
+        function updateClock() {
+            const now = new Date();
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            
+            const dayName = days[now.getDay()];
+            const dateNum = String(now.getDate()).padStart(2, '0');
+            const monthName = months[now.getMonth()];
+            const year = now.getFullYear();
+
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            const formatted = `${hours}:${minutes}:${seconds} WIB - ${dayName}, ${dateNum} ${monthName} ${year}`;
+            document.getElementById('live-clock').innerText = formatted;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        /* ----------------------------------------------------
+           3. MAP (LEAFLET.JS) INTEGRATION
+        ---------------------------------------------------- */
+        function initMap() {
+            // Kayuagung - Palembang Toll Coordinates Approx
+            const center = [-3.18, 104.78];
+            mapInstance = L.map('map', {
+                zoomControl: false,
+                attributionControl: false
+            }).setView(center, 10);
+
+            // Satellite Layer (Esri)
+            mapLayers.satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 18
+            });
+
+            // Dark Vector Layer
+            mapLayers.dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19
+            });
+
+            mapLayers.satellite.addTo(mapInstance);
+            activeTileLayer = 'satellite';
+
+            // Add Zoom Control top right
+            L.control.zoom({ position: 'topleft' }).addTo(mapInstance);
+
+            // Corridor Polyline (Kayuagung to Palembang)
+            const coordsLancar = [
+                [-3.38, 104.84],
+                [-3.28, 104.81],
+                [-3.22, 104.79]
+            ];
+            const coordsPadat = [
+                [-3.22, 104.79],
+                [-3.14, 104.75]
+            ];
+            const coordsKerja = [
+                [-3.14, 104.75],
+                [-3.11, 104.73]
+            ];
+
+            // Render Segment Polylines
+            L.polyline(coordsLancar, { color: '#10b981', weight: 6, opacity: 0.9 }).addTo(mapInstance);
+            L.polyline(coordsPadat, { color: '#f59e0b', weight: 6, opacity: 0.9 }).addTo(mapInstance);
+            L.polyline(coordsKerja, { color: '#ef4444', weight: 6, opacity: 0.9 }).addTo(mapInstance);
+
+            // Markers for Kayuagung & Kramasan
+            const customIcon = (color) => L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div style="background-color: ${color}; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 8px ${color};"></div>`,
+                iconSize: [14, 14],
+                iconAnchor: [7, 7]
+            });
+
+            L.marker([-3.38, 104.84], { icon: customIcon('#10b981') }).addTo(mapInstance).bindPopup("<b>Gerbang Tol Kayuagung</b>");
+            L.marker([-3.11, 104.73], { icon: customIcon('#ef4444') }).addTo(mapInstance).bindPopup("<b>Simpang Susun Kramasan (Palembang)</b>");
+        }
+
+        function toggleMapLayer() {
+            if (activeTileLayer === 'satellite') {
+                mapInstance.removeLayer(mapLayers.satellite);
+                mapLayers.dark.addTo(mapInstance);
+                activeTileLayer = 'dark';
+                showToast("Berhasil mengubah ke Peta Vektor Dark");
+            } else {
+                mapInstance.removeLayer(mapLayers.dark);
+                mapLayers.satellite.addTo(mapInstance);
+                activeTileLayer = 'satellite';
+                showToast("Berhasil mengubah ke Peta Satelit");
+            }
+        }
+
+        function resetMapView() {
+            mapInstance.setView([-3.18, 104.78], 10);
+            showToast("Tampilan Peta Direset");
+        }
+
+        /* ----------------------------------------------------
+           4. LIVE INCIDENT FEED MANAGEMENT
+        ---------------------------------------------------- */
+        function renderIncidents() {
+            const feedContainer = document.getElementById('incident-feed');
+            feedContainer.innerHTML = '';
+
+            const filtered = incidents.filter(i => activeFilter === 'Semua' || i.category === activeFilter);
+
+            if (filtered.length === 0) {
+                feedContainer.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs">Tidak ada laporan kejadian.</div>`;
+                return;
+            }
+
+            filtered.forEach(inc => {
+                const item = document.createElement('div');
+                item.className = "bg-navy-700/70 border border-slate-700/80 rounded-lg p-2.5 flex flex-col gap-1.5 hover:border-slate-600 transition";
+                item.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <h4 class="text-xs font-bold text-white leading-snug">${inc.title}</h4>
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded border ${inc.statusColor}">${inc.status}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 flex items-center gap-1">
+                        <i class="fa-solid fa-location-dot text-rose-400"></i> ${inc.location}
+                    </p>
+                    <div class="flex items-center justify-between pt-1 border-t border-slate-800 text-[10px]">
+                        <span class="text-blue-400 font-medium">Status: ${inc.officer}</span>
+                        <div class="flex gap-1.5">
+                            <button onclick="focusMapLoc(${inc.lat}, ${inc.lng})" class="bg-navy-600 hover:bg-navy-500 text-slate-200 px-2 py-0.5 rounded border border-slate-600">
+                                <i class="fa-solid fa-crosshairs"></i> Peta
+                            </button>
+                            <button onclick="deleteIncident(${inc.id})" class="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800 px-2 py-0.5 rounded">
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
+                `;
+                feedContainer.appendChild(item);
+            });
+        }
+
+        function filterIncidents(cat) {
+            activeFilter = cat;
+            document.querySelectorAll('#incident-filters button').forEach(btn => {
+                if (btn.innerText.trim() === cat) {
+                    btn.className = "filter-btn active bg-blue-600 text-white px-2.5 py-0.5 rounded-full font-medium";
+                } else {
+                    btn.className = "filter-btn bg-navy-700 hover:bg-navy-600 text-slate-300 px-2.5 py-0.5 rounded-full";
+                }
+            });
+            renderIncidents();
+        }
+
+        function addIncidentReport(e) {
+            e.preventDefault();
+            const title = document.getElementById('input-incident-title').value;
+            const category = document.getElementById('input-incident-cat').value;
+            const location = document.getElementById('input-incident-loc').value;
+            const status = document.getElementById('input-incident-status').value;
+            const officer = document.getElementById('input-incident-officer').value || 'Petugas Menuju Lokasi';
+
+            let statusColor = 'bg-blue-500/20 text-blue-400 border-blue-500/40';
+            if (status === 'Kritis') statusColor = 'bg-rose-500/20 text-rose-400 border-rose-500/40';
+            if (status === 'Penanganan') statusColor = 'bg-amber-500/20 text-amber-400 border-amber-500/40';
+
+            const newIncident = {
+                id: Date.now(),
+                title,
+                category,
+                location,
+                timeAgo: 'Baru saja',
+                status,
+                statusColor,
+                officer,
+                lat: -3.150,
+                lng: 104.770
+            };
+
+            incidents.unshift(newIncident);
+            renderIncidents();
+            closeModal('reportModal');
+            showToast("Laporan kejadian baru berhasil ditambahkan!");
+            document.getElementById('reportForm').reset();
+        }
+
+        function deleteIncident(id) {
+            incidents = incidents.filter(i => i.id !== id);
+            renderIncidents();
+            showToast("Laporan berhasil dihapus");
+        }
+
+        function resetIncidents() {
+            filterIncidents('Semua');
+            showToast("Filter laporan direset");
+        }
+
+        function focusMapLoc(lat, lng) {
+            if (mapInstance) {
+                mapInstance.setView([lat, lng], 13);
+                showToast("Fokus lokasi di peta");
+            }
+        }
+
+        /* ----------------------------------------------------
+           5. SERVICE SUMMARY & TABLE MANAGEMENT
+        ---------------------------------------------------- */
+        function renderServiceTable() {
+            const tbody = document.getElementById('service-table-body');
+            tbody.innerHTML = '';
+
+            serviceData.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-navy-700/40 transition border-b border-slate-800/80";
+                tr.innerHTML = `
+                    <td class="p-2 text-center text-slate-400 font-semibold">${idx + 1}</td>
+                    <td class="p-2 font-medium text-slate-200">${row.date}</td>
+                    <td class="p-2 text-center text-blue-400">${row.penderekan}</td>
+                    <td class="p-2 text-center text-emerald-400">${row.bbm}</td>
+                    <td class="p-2 text-center text-amber-400">${row.roda}</td>
+                    <td class="p-2 text-center text-rose-400">${row.mesin}</td>
+                    <td class="p-2 text-center">
+                        <button onclick="deleteServiceRow(${row.id})" class="text-rose-400 hover:text-rose-300 p-1 rounded hover:bg-rose-950/50">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            calculateServiceTotals();
+        }
+
+        function calculateServiceTotals() {
+            const totPenderekan = serviceData.reduce((acc, curr) => acc + curr.penderekan, 0);
+            const totBbm = serviceData.reduce((acc, curr) => acc + curr.bbm, 0);
+            const totRoda = serviceData.reduce((acc, curr) => acc + curr.roda, 0);
+            const totMesin = serviceData.reduce((acc, curr) => acc + curr.mesin, 0);
+
+            document.getElementById('count-penderekan').innerText = `${totPenderekan} Layanan`;
+            document.getElementById('count-bbm').innerText = `${totBbm} Layanan`;
+            document.getElementById('count-roda').innerText = `${totRoda} Layanan`;
+            document.getElementById('count-mesin').innerText = `${totMesin} Layanan`;
+        }
+
+        function addServiceData(e) {
+            e.preventDefault();
+            const dateVal = document.getElementById('input-service-date').value;
+            const p = parseInt(document.getElementById('input-penderekan').value) || 0;
+            const b = parseInt(document.getElementById('input-bbm').value) || 0;
+            const r = parseInt(document.getElementById('input-roda').value) || 0;
+            const m = parseInt(document.getElementById('input-mesin').value) || 0;
+
+            // Format date YYYY-MM-DD to DD/MM/YYYY
+            const parts = dateVal.split('-');
+            const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateVal;
+
+            const newRow = {
+                id: Date.now(),
+                date: formattedDate,
+                penderekan: p,
+                bbm: b,
+                roda: r,
+                mesin: m
+            };
+
+            serviceData.unshift(newRow);
+            if (serviceData.length > 5) serviceData.pop();
+
+            renderServiceTable();
+            closeModal('serviceModal');
+            showToast("Data harian pelayanan berhasil ditambahkan!");
+        }
+
+        function deleteServiceRow(id) {
+            serviceData = serviceData.filter(item => item.id !== id);
+            renderServiceTable();
+            showToast("Baris data pelayanan telah dihapus");
+        }
+
+        function syncTotals() {
+            calculateServiceTotals();
+            showToast("Total layanan berhasil disinkronisasi");
+        }
+
+        /* ----------------------------------------------------
+           6. CHART.JS ANALYTICS (BAR & PIE)
+        ---------------------------------------------------- */
+        function initCharts() {
+            // Bar Chart Configuration
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            barChartInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: barLabels,
+                    datasets: [{
+                        label: 'Insiden Kecelakaan',
+                        data: barChartData,
+                        backgroundColor: '#ec4899',
+                        hoverBackgroundColor: '#f472b6',
+                        borderRadius: 4,
+                        barThickness: 16
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0b1021',
+                            titleColor: '#fff',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(51, 65, 85, 0.4)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 }, stepSize: 10 },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Pie Chart Configuration
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+            pieChartInstance = new Chart(ctxPie, {
+                type: 'pie',
+                data: {
+                    labels: pieLabels,
+                    datasets: [{
+                        data: pieChartData,
+                        backgroundColor: [
+                            '#3b82f6', // Gol 1 - Blue
+                            '#f97316', // Gol 2 - Orange
+                            '#cbd5e1', // Gol 3 - Slate Light
+                            '#eab308', // Gol 4 - Yellow
+                            '#06b6d4'  // Gol 5 - Cyan
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#0b1021'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#cbd5e1',
+                                font: { size: 10 },
+                                boxWidth: 12,
+                                padding: 8
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0b1021',
+                            borderColor: '#334155',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+        }
+
+        // Edit Bar Chart Modal Populator
+        function buildBarInputs() {
+            const container = document.getElementById('bar-inputs');
+            container.innerHTML = '';
+            barLabels.forEach((lbl, idx) => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between gap-2">
+                        <label class="text-slate-300">Tahun ${lbl}:</label>
+                        <input type="number" id="bar-val-${idx}" value="${barChartData[idx]}" class="w-24 bg-navy-900 border border-slate-700 rounded p-1 text-slate-200">
+                    </div>
+                `;
+            });
+        }
+
+        function saveBarChartData() {
+            barLabels.forEach((_, idx) => {
+                const val = parseInt(document.getElementById(`bar-val-${idx}`).value) || 0;
+                barChartData[idx] = val;
+            });
+            barChartInstance.data.datasets[0].data = barChartData;
+            barChartInstance.update();
+            closeModal('chartBarModal');
+            showToast("Grafik Analitik Kecelakaan Diperbarui!");
+        }
+
+        function resetBarChart() {
+            barChartData = [38, 56, 48, 24, 24, 17, 3];
+            barChartInstance.data.datasets[0].data = barChartData;
+            barChartInstance.update();
+            showToast("Data grafik kecelakaan direset");
+        }
+
+        // Edit Pie Chart Modal Populator
+        function buildPieInputs() {
+            const container = document.getElementById('pie-inputs');
+            container.innerHTML = '';
+            pieLabels.forEach((lbl, idx) => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between gap-2">
+                        <label class="text-slate-300">${lbl} (%):</label>
+                        <input type="number" id="pie-val-${idx}" value="${pieChartData[idx]}" class="w-24 bg-navy-900 border border-slate-700 rounded p-1 text-slate-200">
+                    </div>
+                `;
+            });
+        }
+
+        function savePieChartData() {
+            pieLabels.forEach((_, idx) => {
+                const val = parseInt(document.getElementById(`pie-val-${idx}`).value) || 0;
+                pieChartData[idx] = val;
+            });
+            pieChartInstance.data.datasets[0].data = pieChartData;
+            pieChartInstance.update();
+            closeModal('chartPieModal');
+            showToast("Persentase Golongan Kendaraan Diperbarui!");
+        }
+
+        function resetPieChart() {
+            pieChartData = [65, 15, 10, 6, 4];
+            pieChartInstance.data.datasets[0].data = pieChartData;
+            pieChartInstance.update();
+            showToast("Data persentase golongan direset");
+        }
+
+        /* ----------------------------------------------------
+           7. HEADER & CONFIG SAVE
+        ---------------------------------------------------- */
+        function saveHeaderConfig(e) {
+            e.preventDefault();
+            const title = document.getElementById('input-title').value;
+            const subtitle = document.getElementById('input-subtitle').value;
+            const weather = document.getElementById('input-weather').value;
+            const vol = document.getElementById('input-vol').value;
+            const speed = document.getElementById('input-speed').value;
+            const los = document.getElementById('input-los').value;
+
+            document.getElementById('header-title').childNodes[0].nodeValue = title + ' ';
+            document.getElementById('header-subtitle').innerText = subtitle;
+            document.getElementById('weather-text').innerText = weather;
+            document.getElementById('kpi-volume').innerText = vol;
+            document.getElementById('kpi-speed').childNodes[0].nodeValue = speed + ' ';
+            document.getElementById('kpi-los').innerText = los;
+
+            closeModal('headerModal');
+            showToast("Header & KPI berhasil disesuaikan!");
+        }
+
+        /* ----------------------------------------------------
+           8. PAGE INITIALIZATION
+        ---------------------------------------------------- */
+        window.onload = function() {
+            initMap();
+            renderIncidents();
+            renderServiceTable();
+            initCharts();
+            buildBarInputs();
+            buildPieInputs();
+
+            // Modal open hooks
+            document.onclick = function(e) {
+                if (e.target.id === 'chartBarModal') closeModal('chartBarModal');
+                if (e.target.id === 'chartPieModal') closeModal('chartPieModal');
+                if (e.target.id === 'headerModal') closeModal('headerModal');
+                if (e.target.id === 'serviceModal') closeModal('serviceModal');
+                if (e.target.id === 'reportModal') closeModal('reportModal');
+            }
+        };
+    </script>
+</body>
+</html>
