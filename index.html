@@ -81,14 +81,21 @@
                 <i class="fa-solid me-0.5 fa-road"></i>
             </div>
             <div>
-                <h1 id="header-title" class="text-base md:text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                    TRAFFIC INFORMATION CENTER (TIC) <span class="text-blue-400 font-normal text-sm md:text-base">Jalan Tol Kayuagung - Palembang</span>
+                <h1 id="header-title-container" class="text-base md:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                    <span id="header-title">TRAFFIC INFORMATION CENTER (TIC)</span> 
+                    <span id="header-subtitle" class="text-blue-400 font-normal text-sm md:text-base">Jalan Tol Kayuagung - Palembang</span>
                 </h1>
-                <p id="header-subtitle" class="text-xs text-slate-400">Development BY Operasi PT. Waskita Sriwijaya Tol</p>
+                <p id="header-dev" class="text-xs text-slate-400">Development BY Operasi PT. Waskita Sriwijaya Tol</p>
             </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-2 md:gap-3 text-xs w-full lg:w-auto justify-start lg:justify-end">
+            <!-- Persistence Badge -->
+            <div class="flex items-center gap-1.5 bg-blue-950/80 border border-blue-700/60 px-2.5 py-1.5 rounded-lg text-blue-300 font-medium text-[11px]" title="Semua data tersimpan otomatis di browser">
+                <i class="fa-solid fa-floppy-disk text-blue-400"></i>
+                <span>Auto-Saved</span>
+            </div>
+
             <!-- Online Status -->
             <div class="flex items-center gap-2 bg-emerald-950/60 border border-emerald-800/60 px-3 py-1.5 rounded-lg text-emerald-400 font-semibold">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
@@ -104,7 +111,7 @@
             <!-- Real-time Clock -->
             <div class="flex items-center gap-2 bg-navy-700 border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 font-mono">
                 <i class="fa-regular fa-clock text-blue-400"></i>
-                <span id="live-clock">12:00:00 WIB - Senin, 21 Sep 2026</span>
+                <span id="live-clock">--:--:-- WIB</span>
             </div>
 
             <!-- Edit Header Button -->
@@ -122,7 +129,7 @@
                 <p class="text-xs font-medium text-slate-400 mb-1">Total Kendaraan / Jam</p>
                 <h3 id="kpi-volume" class="text-2xl md:text-3xl font-extrabold text-white">380</h3>
                 <p id="kpi-volume-status" class="text-xs font-semibold text-emerald-400 mt-2 flex items-center gap-1">
-                    <i class="fa-solid fa-arrow-trend-up"></i> Volume Normal
+                    <i class="fa-solid fa-arrow-trend-up"></i> <span id="kpi-volume-status-text">Volume Normal</span>
                 </p>
             </div>
             <div class="w-10 h-10 rounded-lg bg-blue-950/80 border border-blue-800/50 text-blue-400 flex items-center justify-center text-lg">
@@ -134,9 +141,9 @@
         <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 flex justify-between items-start shadow-md relative overflow-hidden">
             <div>
                 <p class="text-xs font-medium text-slate-400 mb-1">Kecepatan Rata-Rata</p>
-                <h3 id="kpi-speed" class="text-2xl md:text-3xl font-extrabold text-white">80 <span class="text-sm font-normal text-slate-400">km/jam</span></h3>
+                <h3 id="kpi-speed-container" class="text-2xl md:text-3xl font-extrabold text-white"><span id="kpi-speed">80</span> <span class="text-sm font-normal text-slate-400">km/jam</span></h3>
                 <p id="kpi-speed-status" class="text-xs font-semibold text-amber-400 mt-2 flex items-center gap-1">
-                    <i class="fa-solid fa-triangle-exclamation"></i> -3.1% padat merayap
+                    <i class="fa-solid fa-triangle-exclamation"></i> <span id="kpi-speed-status-text">-3.1% padat merayap</span>
                 </p>
             </div>
             <div class="w-10 h-10 rounded-lg bg-amber-950/80 border border-amber-800/50 text-amber-400 flex items-center justify-center text-lg">
@@ -150,7 +157,7 @@
                 <p class="text-xs font-medium text-slate-400 mb-1">Tingkat Pelayanan (LOS)</p>
                 <h3 id="kpi-los" class="text-2xl md:text-3xl font-extrabold text-emerald-400">Kategori B</h3>
                 <p id="kpi-los-status" class="text-xs font-semibold text-emerald-400 mt-2 flex items-center gap-1">
-                    <i class="fa-solid fa-check-circle"></i> Arus Stabil / Lancar
+                    <i class="fa-solid fa-check-circle"></i> <span id="kpi-los-status-text">Arus Stabil / Lancar</span>
                 </p>
             </div>
             <div class="w-10 h-10 rounded-lg bg-emerald-950/80 border border-emerald-800/50 text-emerald-400 flex items-center justify-center text-lg">
@@ -162,10 +169,10 @@
         <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 flex justify-between items-start shadow-md relative overflow-hidden">
             <div>
                 <p class="text-xs font-medium text-slate-400 mb-1">Insiden Aktif Tahun 2026</p>
-                <h3 id="kpi-incident" class="text-2xl md:text-3xl font-extrabold text-rose-500">3 Lokasi</h3>
+                <h3 id="kpi-incident-count" class="text-2xl md:text-3xl font-extrabold text-rose-500">3 Lokasi</h3>
                 <p id="kpi-incident-detail" class="text-[11px] font-medium text-slate-300 mt-2">
-                    Faktor Penyebab 2026: 6 Manusia, 0 Jalan, 0 Kendaraan<br>
-                    <span class="text-slate-400 font-mono">LR : 3, LB : 1, MD : 1</span>
+                    Faktor: <span id="kpi-factors">6 Manusia, 0 Jalan, 0 Kendaraan</span><br>
+                    <span class="text-slate-400 font-mono" id="kpi-casualties">LR : 3, LB : 1, MD : 1</span>
                 </p>
             </div>
             <div class="w-10 h-10 rounded-lg bg-rose-950/80 border border-rose-800/50 text-rose-400 flex items-center justify-center text-lg">
@@ -217,8 +224,8 @@
                         <button onclick="openModal('reportModal')" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-2.5 py-1 rounded shadow">
                             + Laporan
                         </button>
-                        <button onclick="resetIncidents()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-2 py-1 rounded">
-                            Reset
+                        <button onclick="resetIncidentsFilter()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-2 py-1 rounded">
+                            Reset Filter
                         </button>
                     </div>
                 </div>
@@ -256,7 +263,7 @@
                         </div>
                         <div>
                             <p class="text-[11px] font-medium text-slate-400">Penderekan</p>
-                            <h4 id="count-penderekan" class="text-sm font-bold text-white">5 Layanan</h4>
+                            <h4 id="count-penderekan" class="text-sm font-bold text-white">0 Layanan</h4>
                         </div>
                     </div>
 
@@ -267,7 +274,7 @@
                         </div>
                         <div>
                             <p class="text-[11px] font-medium text-slate-400">Habis BBM</p>
-                            <h4 id="count-bbm" class="text-sm font-bold text-white">3 Layanan</h4>
+                            <h4 id="count-bbm" class="text-sm font-bold text-white">0 Layanan</h4>
                         </div>
                     </div>
 
@@ -278,7 +285,7 @@
                         </div>
                         <div>
                             <p class="text-[11px] font-medium text-slate-400">Kendala Roda</p>
-                            <h4 id="count-roda" class="text-sm font-bold text-white">24 Layanan</h4>
+                            <h4 id="count-roda" class="text-sm font-bold text-white">0 Layanan</h4>
                         </div>
                     </div>
 
@@ -289,7 +296,7 @@
                         </div>
                         <div>
                             <p class="text-[11px] font-medium text-slate-400">Kendala Mesin</p>
-                            <h4 id="count-mesin" class="text-sm font-bold text-white">8 Layanan</h4>
+                            <h4 id="count-mesin" class="text-sm font-bold text-white">0 Layanan</h4>
                         </div>
                     </div>
                 </div>
@@ -333,7 +340,7 @@
                     </div>
                 </div>
                 <div class="text-[11px] text-slate-500 mt-2 text-right">
-                    Menampilkan 5 data harian terbaru
+                    Menampilkan data harian tersimpan
                 </div>
             </div>
 
@@ -349,7 +356,7 @@
                         <i class="fa-solid fa-chart-column text-blue-400"></i> DASHBOARD ANALITIK KECELAKAAN
                     </h2>
                     <div class="flex gap-1 text-[10px]">
-                        <button onclick="openModal('chartBarModal')" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-0.5 rounded">Edit Data</button>
+                        <button onclick="openBarChartModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-0.5 rounded">Edit Data</button>
                         <button onclick="resetBarChart()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-1.5 py-0.5 rounded">Reset</button>
                     </div>
                 </div>
@@ -360,7 +367,7 @@
                 </div>
 
                 <!-- YoY Note -->
-                <p class="text-[10px] text-emerald-400 font-medium text-center flex items-center justify-center gap-1">
+                <p id="bar-yoy-note" class="text-[10px] text-emerald-400 font-medium text-center flex items-center justify-center gap-1">
                     <i class="fa-solid fa-arrow-down"></i> Penurunan YoY: -89.5% (2021 vs 2026)
                 </p>
             </div>
@@ -372,7 +379,7 @@
                         <i class="fa-solid fa-chart-pie text-cyan-400"></i> PERSENTASE GOLONGAN KENDARAAN
                     </h2>
                     <div class="flex gap-1 text-[10px]">
-                        <button onclick="openModal('chartPieModal')" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-0.5 rounded">Edit Data</button>
+                        <button onclick="openPieChartModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-0.5 rounded">Edit Data</button>
                         <button onclick="resetPieChart()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-1.5 py-0.5 rounded">Reset</button>
                     </div>
                 </div>
@@ -392,34 +399,59 @@
     <!-- Modal 1: Edit Header & KPI -->
     <div id="headerModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-navy-800 border border-slate-700 rounded-xl w-full max-w-md p-5 shadow-2xl">
-            <h3 class="text-base font-bold text-white mb-4 border-b border-slate-700 pb-2">Edit Header & KPI System</h3>
+            <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-2">
+                <h3 class="text-base font-bold text-white">Edit Header & KPI System</h3>
+                <button onclick="resetToInitialDefaults()" class="bg-rose-950/80 hover:bg-rose-900 border border-rose-800 text-rose-300 text-[10px] font-medium px-2 py-1 rounded flex items-center gap-1" title="Kembalikan semua data ke pengaturan awal">
+                    <i class="fa-solid fa-rotate-left"></i> Reset Default
+                </button>
+            </div>
             <form id="headerForm" onsubmit="saveHeaderConfig(event)" class="space-y-3 text-xs">
                 <div>
                     <label class="block text-slate-400 mb-1">Judul Utama</label>
-                    <input type="text" id="input-title" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500" value="TRAFFIC INFORMATION CENTER (TIC)">
+                    <input type="text" id="input-title" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
                     <label class="block text-slate-400 mb-1">Sub-Judul Tol</label>
-                    <input type="text" id="input-subtitle" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500" value="Jalan Tol Kayuagung - Palembang">
+                    <input type="text" id="input-subtitle" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-slate-400 mb-1">Cuaca</label>
-                        <input type="text" id="input-weather" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500" value="Cerah, 31°C">
+                        <input type="text" id="input-weather" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
                     </div>
                     <div>
                         <label class="block text-slate-400 mb-1">Vol Kendaraan/Jam</label>
-                        <input type="number" id="input-vol" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500" value="380">
+                        <input type="number" id="input-vol" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-slate-400 mb-1">Kecepatan (km/jam)</label>
-                        <input type="number" id="input-speed" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500" value="80">
+                        <label class="block text-slate-400 mb-1">Status Vol Kendaraan</label>
+                        <input type="text" id="input-vol-status" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
                     </div>
                     <div>
+                        <label class="block text-slate-400 mb-1">Kecepatan (km/jam)</label>
+                        <input type="number" id="input-speed" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
                         <label class="block text-slate-400 mb-1">Kategori LOS</label>
-                        <input type="text" id="input-los" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500" value="Kategori B">
+                        <input type="text" id="input-los" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Status LOS</label>
+                        <input type="text" id="input-los-status" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Insiden Aktif (Text)</label>
+                        <input type="text" id="input-incident-count" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Korban (LR, LB, MD)</label>
+                        <input type="text" id="input-casualties" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-3">
@@ -502,6 +534,16 @@
                         <input type="text" id="input-incident-officer" placeholder="cth: Petugas Tiba" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
                     </div>
                 </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Latitude (Opsional)</label>
+                        <input type="number" step="any" id="input-incident-lat" placeholder="-3.1326" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Longitude (Opsional)</label>
+                        <input type="number" step="any" id="input-incident-lng" placeholder="104.7536" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
                 <div class="flex justify-end gap-2 pt-3">
                     <button type="button" onclick="closeModal('reportModal')" class="bg-navy-700 hover:bg-navy-600 text-slate-300 px-3 py-1.5 rounded">Batal</button>
                     <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-1.5 rounded">Kirim Laporan</button>
@@ -540,19 +582,36 @@
         <span id="toast-message">Notifikasi</span>
     </div>
 
+    <!-- JAVASCRIPT & LOCALSTORAGE LOGIC -->
     <script>
         /* ----------------------------------------------------
-           1. INITIAL DATA STATE & STORE
+           1. DEFAULT INITIAL MOCKUP DATA
         ---------------------------------------------------- */
-        let serviceData = [
+        const DEFAULT_HEADER = {
+            title: 'TRAFFIC INFORMATION CENTER (TIC)',
+            subtitle: 'Jalan Tol Kayuagung - Palembang',
+            dev: 'Development BY Operasi PT. Waskita Sriwijaya Tol',
+            weather: 'Cerah, 31°C',
+            vol: 380,
+            volStatus: 'Volume Normal',
+            speed: 80,
+            speedStatus: '-3.1% padat merayap',
+            los: 'Kategori B',
+            losStatus: 'Arus Stabil / Lancar',
+            incidentCountText: '3 Lokasi',
+            factors: '6 Manusia, 0 Jalan, 0 Kendaraan',
+            casualties: 'LR : 3, LB : 1, MD : 1'
+        };
+
+        const DEFAULT_SERVICES = [
             { id: 1, date: '20/09/2026', penderekan: 8, bbm: 2, roda: 2, mesin: 1 },
             { id: 2, date: '19/09/2026', penderekan: 2, bbm: 8, roda: 5, mesin: 2 },
             { id: 3, date: '18/09/2026', penderekan: 8, bbm: 8, roda: 8, mesin: 0 },
             { id: 4, date: '17/09/2026', penderekan: 8, bbm: 0, roda: 1, mesin: 2 },
-            { id: 5, date: '16/09/2026', penderekan: 3, bbm: 1, roda: 8, mesin: 1 },
+            { id: 5, date: '16/09/2026', penderekan: 3, bbm: 1, roda: 8, mesin: 1 }
         ];
 
-        let incidents = [
+        const DEFAULT_INCIDENTS = [
             {
                 id: 1,
                 title: 'Kecelakaan Beruntun 2 Mobil',
@@ -579,11 +638,47 @@
             }
         ];
 
-        let barChartData = [38, 56, 48, 24, 24, 17, 3];
+        const DEFAULT_BAR_DATA = [38, 56, 48, 24, 24, 17, 3];
         const barLabels = ['2020', '2021', '2022', '2023', '2024', '2025', '2026'];
 
-        let pieChartData = [65, 15, 10, 6, 4];
+        const DEFAULT_PIE_DATA = [65, 15, 10, 6, 4];
         const pieLabels = ['Golongan 1', 'Golongan 2', 'Golongan 3', 'Golongan 4', 'Golongan 5'];
+
+        /* ----------------------------------------------------
+           2. STATE & LOCALSTORAGE WRAPPERS
+        ---------------------------------------------------- */
+        const STORAGE_KEYS = {
+            HEADER: 'TIC_HEADER_CONFIG',
+            SERVICES: 'TIC_SERVICE_DATA',
+            INCIDENTS: 'TIC_INCIDENT_DATA',
+            BAR_CHART: 'TIC_BAR_CHART_DATA',
+            PIE_CHART: 'TIC_PIE_CHART_DATA'
+        };
+
+        function loadFromStorage(key, fallback) {
+            try {
+                const stored = localStorage.getItem(key);
+                return stored ? JSON.parse(stored) : fallback;
+            } catch (e) {
+                console.error("Storage load error:", e);
+                return fallback;
+            }
+        }
+
+        function saveToStorage(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (e) {
+                console.error("Storage save error:", e);
+            }
+        }
+
+        // Active Application State
+        let headerState = loadFromStorage(STORAGE_KEYS.HEADER, DEFAULT_HEADER);
+        let serviceData = loadFromStorage(STORAGE_KEYS.SERVICES, DEFAULT_SERVICES);
+        let incidents = loadFromStorage(STORAGE_KEYS.INCIDENTS, DEFAULT_INCIDENTS);
+        let barChartData = loadFromStorage(STORAGE_KEYS.BAR_CHART, DEFAULT_BAR_DATA);
+        let pieChartData = loadFromStorage(STORAGE_KEYS.PIE_CHART, DEFAULT_PIE_DATA);
 
         let activeFilter = 'Semua';
         let barChartInstance = null;
@@ -591,9 +686,10 @@
         let mapInstance = null;
         let activeTileLayer = null;
         let mapLayers = {};
+        let mapIncidentMarkers = [];
 
         /* ----------------------------------------------------
-           2. REALTIME CLOCK & UTILS
+           3. UI HELPERS & REALTIME CLOCK
         ---------------------------------------------------- */
         function updateClock() {
             const now = new Date();
@@ -610,7 +706,8 @@
             const seconds = String(now.getSeconds()).padStart(2, '0');
 
             const formatted = `${hours}:${minutes}:${seconds} WIB - ${dayName}, ${dateNum} ${monthName} ${year}`;
-            document.getElementById('live-clock').innerText = formatted;
+            const el = document.getElementById('live-clock');
+            if (el) el.innerText = formatted;
         }
         setInterval(updateClock, 1000);
         updateClock();
@@ -625,6 +722,7 @@
         }
 
         function openModal(id) {
+            if (id === 'headerModal') populateHeaderModal();
             document.getElementById(id).classList.remove('hidden');
         }
 
@@ -633,15 +731,76 @@
         }
 
         /* ----------------------------------------------------
-           3. MAP (LEAFLET.JS) INTEGRATION
+           4. RENDER HEADER & KPI
+        ---------------------------------------------------- */
+        function renderHeader() {
+            document.getElementById('header-title').innerText = headerState.title;
+            document.getElementById('header-subtitle').innerText = headerState.subtitle;
+            document.getElementById('header-dev').innerText = headerState.dev || 'Development BY Operasi PT. Waskita Sriwijaya Tol';
+            document.getElementById('weather-text').innerText = headerState.weather;
+
+            document.getElementById('kpi-volume').innerText = headerState.vol;
+            document.getElementById('kpi-volume-status-text').innerText = headerState.volStatus || 'Volume Normal';
+
+            document.getElementById('kpi-speed').innerText = headerState.speed;
+            document.getElementById('kpi-speed-status-text').innerText = headerState.speedStatus || '-3.1% padat merayap';
+
+            document.getElementById('kpi-los').innerText = headerState.los;
+            document.getElementById('kpi-los-status-text').innerText = headerState.losStatus || 'Arus Stabil / Lancar';
+
+            document.getElementById('kpi-incident-count').innerText = headerState.incidentCountText || '3 Lokasi';
+            document.getElementById('kpi-factors').innerText = headerState.factors || '6 Manusia, 0 Jalan, 0 Kendaraan';
+            document.getElementById('kpi-casualties').innerText = headerState.casualties || 'LR : 3, LB : 1, MD : 1';
+        }
+
+        function populateHeaderModal() {
+            document.getElementById('input-title').value = headerState.title;
+            document.getElementById('input-subtitle').value = headerState.subtitle;
+            document.getElementById('input-weather').value = headerState.weather;
+            document.getElementById('input-vol').value = headerState.vol;
+            document.getElementById('input-vol-status').value = headerState.volStatus || 'Volume Normal';
+            document.getElementById('input-speed').value = headerState.speed;
+            document.getElementById('input-speed-status').value = headerState.speedStatus || '-3.1% padat merayap';
+            document.getElementById('input-los').value = headerState.los;
+            document.getElementById('input-los-status').value = headerState.losStatus || 'Arus Stabil / Lancar';
+            document.getElementById('input-incident-count').value = headerState.incidentCountText || '3 Lokasi';
+            document.getElementById('input-casualties').value = headerState.casualties || 'LR : 3, LB : 1, MD : 1';
+        }
+
+        function saveHeaderConfig(e) {
+            e.preventDefault();
+            headerState = {
+                title: document.getElementById('input-title').value,
+                subtitle: document.getElementById('input-subtitle').value,
+                dev: headerState.dev,
+                weather: document.getElementById('input-weather').value,
+                vol: parseInt(document.getElementById('input-vol').value) || 0,
+                volStatus: document.getElementById('input-vol-status').value,
+                speed: parseInt(document.getElementById('input-speed').value) || 0,
+                speedStatus: document.getElementById('input-speed-status').value,
+                los: document.getElementById('input-los').value,
+                losStatus: document.getElementById('input-los-status').value,
+                incidentCountText: document.getElementById('input-incident-count').value,
+                factors: headerState.factors,
+                casualties: document.getElementById('input-casualties').value
+            };
+
+            saveToStorage(STORAGE_KEYS.HEADER, headerState);
+            renderHeader();
+            closeModal('headerModal');
+            showToast("Header & KPI berhasil disimpan ke LocalStorage!");
+        }
+
+        /* ----------------------------------------------------
+           5. LEAFLET MAP INTEGRATION
         ---------------------------------------------------- */
         function initMap() {
-            // Kayuagung - Palembang Toll Coordinates Approx
-            const center = [-3.18, 104.78];
+            // Target Center Focus: lat -3.1326, lng 104.7536, zoom 12
+            const center = [-3.1326, 104.7536];
             mapInstance = L.map('map', {
                 zoomControl: false,
                 attributionControl: false
-            }).setView(center, 10);
+            }).setView(center, 12);
 
             // Satellite Layer (Esri)
             mapLayers.satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -656,10 +815,9 @@
             mapLayers.satellite.addTo(mapInstance);
             activeTileLayer = 'satellite';
 
-            // Add Zoom Control top right
             L.control.zoom({ position: 'topleft' }).addTo(mapInstance);
 
-            // Corridor Polyline (Kayuagung to Palembang)
+            // Corridor Polyline Routes
             const coordsLancar = [
                 [-3.38, 104.84],
                 [-3.28, 104.81],
@@ -674,21 +832,42 @@
                 [-3.11, 104.73]
             ];
 
-            // Render Segment Polylines
             L.polyline(coordsLancar, { color: '#10b981', weight: 6, opacity: 0.9 }).addTo(mapInstance);
             L.polyline(coordsPadat, { color: '#f59e0b', weight: 6, opacity: 0.9 }).addTo(mapInstance);
             L.polyline(coordsKerja, { color: '#ef4444', weight: 6, opacity: 0.9 }).addTo(mapInstance);
 
-            // Markers for Kayuagung & Kramasan
-            const customIcon = (color) => L.divIcon({
+            // Center Focus Marker
+            const focusIcon = L.divIcon({
                 className: 'custom-div-icon',
-                html: `<div style="background-color: ${color}; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 8px ${color};"></div>`,
-                iconSize: [14, 14],
-                iconAnchor: [7, 7]
+                html: `<div style="background-color: #06b6d4; width: 18px; height: 18px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 12px #06b6d4;"></div>`,
+                iconSize: [18, 18],
+                iconAnchor: [9, 9]
             });
+            L.marker(center, { icon: focusIcon }).addTo(mapInstance).bindPopup("<b>Pos Pantau Pemantauan Peta (-3.1326, 104.7536)</b>");
 
-            L.marker([-3.38, 104.84], { icon: customIcon('#10b981') }).addTo(mapInstance).bindPopup("<b>Gerbang Tol Kayuagung</b>");
-            L.marker([-3.11, 104.73], { icon: customIcon('#ef4444') }).addTo(mapInstance).bindPopup("<b>Simpang Susun Kramasan (Palembang)</b>");
+            updateMapIncidentMarkers();
+        }
+
+        function updateMapIncidentMarkers() {
+            if (!mapInstance) return;
+            // Clear existing incident markers
+            mapIncidentMarkers.forEach(m => mapInstance.removeLayer(m));
+            mapIncidentMarkers = [];
+
+            incidents.forEach(inc => {
+                if (inc.lat && inc.lng) {
+                    const color = inc.status === 'Kritis' ? '#ef4444' : (inc.status === 'Penanganan' ? '#f59e0b' : '#3b82f6');
+                    const icon = L.divIcon({
+                        className: 'custom-div-icon',
+                        html: `<div style="background-color: ${color}; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 8px ${color};"></div>`,
+                        iconSize: [14, 14],
+                        iconAnchor: [7, 7]
+                    });
+                    const marker = L.marker([inc.lat, inc.lng], { icon }).addTo(mapInstance)
+                        .bindPopup(`<b>${inc.title}</b><br>${inc.location}<br><span style="color:${color}">${inc.status}</span>`);
+                    mapIncidentMarkers.push(marker);
+                }
+            });
         }
 
         function toggleMapLayer() {
@@ -706,12 +885,14 @@
         }
 
         function resetMapView() {
-            mapInstance.setView([-3.18, 104.78], 10);
-            showToast("Tampilan Peta Direset");
+            if (mapInstance) {
+                mapInstance.setView([-3.1326, 104.7536], 12);
+                showToast("Tampilan Peta Direset ke Pos Pemantauan (-3.1326, 104.7536)");
+            }
         }
 
         /* ----------------------------------------------------
-           4. LIVE INCIDENT FEED MANAGEMENT
+           6. LIVE INCIDENTS & LOCALSTORAGE
         ---------------------------------------------------- */
         function renderIncidents() {
             const feedContainer = document.getElementById('incident-feed');
@@ -738,7 +919,7 @@
                     <div class="flex items-center justify-between pt-1 border-t border-slate-800 text-[10px]">
                         <span class="text-blue-400 font-medium">Status: ${inc.officer}</span>
                         <div class="flex gap-1.5">
-                            <button onclick="focusMapLoc(${inc.lat}, ${inc.lng})" class="bg-navy-600 hover:bg-navy-500 text-slate-200 px-2 py-0.5 rounded border border-slate-600">
+                            <button onclick="focusMapLoc(${inc.lat || -3.1326}, ${inc.lng || 104.7536})" class="bg-navy-600 hover:bg-navy-500 text-slate-200 px-2 py-0.5 rounded border border-slate-600">
                                 <i class="fa-solid fa-crosshairs"></i> Peta
                             </button>
                             <button onclick="deleteIncident(${inc.id})" class="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800 px-2 py-0.5 rounded">
@@ -749,6 +930,8 @@
                 `;
                 feedContainer.appendChild(item);
             });
+
+            updateMapIncidentMarkers();
         }
 
         function filterIncidents(cat) {
@@ -771,6 +954,9 @@
             const status = document.getElementById('input-incident-status').value;
             const officer = document.getElementById('input-incident-officer').value || 'Petugas Menuju Lokasi';
 
+            const latVal = parseFloat(document.getElementById('input-incident-lat').value);
+            const lngVal = parseFloat(document.getElementById('input-incident-lng').value);
+
             let statusColor = 'bg-blue-500/20 text-blue-400 border-blue-500/40';
             if (status === 'Kritis') statusColor = 'bg-rose-500/20 text-rose-400 border-rose-500/40';
             if (status === 'Penanganan') statusColor = 'bg-amber-500/20 text-amber-400 border-amber-500/40';
@@ -784,37 +970,40 @@
                 status,
                 statusColor,
                 officer,
-                lat: -3.150,
-                lng: 104.770
+                lat: !isNaN(latVal) ? latVal : -3.1326,
+                lng: !isNaN(lngVal) ? lngVal : 104.7536
             };
 
             incidents.unshift(newIncident);
+            saveToStorage(STORAGE_KEYS.INCIDENTS, incidents);
+
             renderIncidents();
             closeModal('reportModal');
-            showToast("Laporan kejadian baru berhasil ditambahkan!");
+            showToast("Laporan kejadian tersimpan di LocalStorage!");
             document.getElementById('reportForm').reset();
         }
 
         function deleteIncident(id) {
             incidents = incidents.filter(i => i.id !== id);
+            saveToStorage(STORAGE_KEYS.INCIDENTS, incidents);
             renderIncidents();
-            showToast("Laporan berhasil dihapus");
+            showToast("Laporan berhasil dihapus & tersimpan!");
         }
 
-        function resetIncidents() {
+        function resetIncidentsFilter() {
             filterIncidents('Semua');
             showToast("Filter laporan direset");
         }
 
         function focusMapLoc(lat, lng) {
             if (mapInstance) {
-                mapInstance.setView([lat, lng], 13);
-                showToast("Fokus lokasi di peta");
+                mapInstance.setView([lat, lng], 14);
+                showToast(`Fokus ke lokasi (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
             }
         }
 
         /* ----------------------------------------------------
-           5. SERVICE SUMMARY & TABLE MANAGEMENT
+           7. TRAFFIC SERVICES & LOCALSTORAGE
         ---------------------------------------------------- */
         function renderServiceTable() {
             const tbody = document.getElementById('service-table-body');
@@ -862,7 +1051,6 @@
             const r = parseInt(document.getElementById('input-roda').value) || 0;
             const m = parseInt(document.getElementById('input-mesin').value) || 0;
 
-            // Format date YYYY-MM-DD to DD/MM/YYYY
             const parts = dateVal.split('-');
             const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateVal;
 
@@ -876,17 +1064,19 @@
             };
 
             serviceData.unshift(newRow);
-            if (serviceData.length > 5) serviceData.pop();
+            saveToStorage(STORAGE_KEYS.SERVICES, serviceData);
 
             renderServiceTable();
             closeModal('serviceModal');
-            showToast("Data harian pelayanan berhasil ditambahkan!");
+            showToast("Data harian pelayanan berhasil disimpan!");
+            document.getElementById('serviceForm').reset();
         }
 
         function deleteServiceRow(id) {
             serviceData = serviceData.filter(item => item.id !== id);
+            saveToStorage(STORAGE_KEYS.SERVICES, serviceData);
             renderServiceTable();
-            showToast("Baris data pelayanan telah dihapus");
+            showToast("Baris data pelayanan telah dihapus & disimpan");
         }
 
         function syncTotals() {
@@ -895,7 +1085,7 @@
         }
 
         /* ----------------------------------------------------
-           6. CHART.JS ANALYTICS (BAR & PIE)
+           8. CHART.JS ANALYTICS & LOCALSTORAGE
         ---------------------------------------------------- */
         function initCharts() {
             // Bar Chart Configuration
@@ -982,8 +1172,8 @@
             });
         }
 
-        // Edit Bar Chart Modal Populator
-        function buildBarInputs() {
+        // Edit Bar Chart Modal
+        function openBarChartModal() {
             const container = document.getElementById('bar-inputs');
             container.innerHTML = '';
             barLabels.forEach((lbl, idx) => {
@@ -994,6 +1184,7 @@
                     </div>
                 `;
             });
+            openModal('chartBarModal');
         }
 
         function saveBarChartData() {
@@ -1001,21 +1192,24 @@
                 const val = parseInt(document.getElementById(`bar-val-${idx}`).value) || 0;
                 barChartData[idx] = val;
             });
+
+            saveToStorage(STORAGE_KEYS.BAR_CHART, barChartData);
             barChartInstance.data.datasets[0].data = barChartData;
             barChartInstance.update();
             closeModal('chartBarModal');
-            showToast("Grafik Analitik Kecelakaan Diperbarui!");
+            showToast("Grafik Kecelakaan tersimpan di LocalStorage!");
         }
 
         function resetBarChart() {
-            barChartData = [38, 56, 48, 24, 24, 17, 3];
+            barChartData = [...DEFAULT_BAR_DATA];
+            saveToStorage(STORAGE_KEYS.BAR_CHART, barChartData);
             barChartInstance.data.datasets[0].data = barChartData;
             barChartInstance.update();
-            showToast("Data grafik kecelakaan direset");
+            showToast("Data grafik kecelakaan direset ke default");
         }
 
-        // Edit Pie Chart Modal Populator
-        function buildPieInputs() {
+        // Edit Pie Chart Modal
+        function openPieChartModal() {
             const container = document.getElementById('pie-inputs');
             container.innerHTML = '';
             pieLabels.forEach((lbl, idx) => {
@@ -1026,6 +1220,7 @@
                     </div>
                 `;
             });
+            openModal('chartPieModal');
         }
 
         function savePieChartData() {
@@ -1033,54 +1228,65 @@
                 const val = parseInt(document.getElementById(`pie-val-${idx}`).value) || 0;
                 pieChartData[idx] = val;
             });
+
+            saveToStorage(STORAGE_KEYS.PIE_CHART, pieChartData);
             pieChartInstance.data.datasets[0].data = pieChartData;
             pieChartInstance.update();
             closeModal('chartPieModal');
-            showToast("Persentase Golongan Kendaraan Diperbarui!");
+            showToast("Data Golongan Kendaraan tersimpan!");
         }
 
         function resetPieChart() {
-            pieChartData = [65, 15, 10, 6, 4];
+            pieChartData = [...DEFAULT_PIE_DATA];
+            saveToStorage(STORAGE_KEYS.PIE_CHART, pieChartData);
             pieChartInstance.data.datasets[0].data = pieChartData;
             pieChartInstance.update();
-            showToast("Data persentase golongan direset");
+            showToast("Data persentase golongan direset ke default");
         }
 
         /* ----------------------------------------------------
-           7. HEADER & CONFIG SAVE
+           9. RESET ALL DATA TO INITIAL DEFAULTS
         ---------------------------------------------------- */
-        function saveHeaderConfig(e) {
-            e.preventDefault();
-            const title = document.getElementById('input-title').value;
-            const subtitle = document.getElementById('input-subtitle').value;
-            const weather = document.getElementById('input-weather').value;
-            const vol = document.getElementById('input-vol').value;
-            const speed = document.getElementById('input-speed').value;
-            const los = document.getElementById('input-los').value;
+        function resetToInitialDefaults() {
+            if (confirm("Apakah Anda yakin ingin mereset seluruh data kembali ke pengaturan awal default?")) {
+                localStorage.removeItem(STORAGE_KEYS.HEADER);
+                localStorage.removeItem(STORAGE_KEYS.SERVICES);
+                localStorage.removeItem(STORAGE_KEYS.INCIDENTS);
+                localStorage.removeItem(STORAGE_KEYS.BAR_CHART);
+                localStorage.removeItem(STORAGE_KEYS.PIE_CHART);
 
-            document.getElementById('header-title').childNodes[0].nodeValue = title + ' ';
-            document.getElementById('header-subtitle').innerText = subtitle;
-            document.getElementById('weather-text').innerText = weather;
-            document.getElementById('kpi-volume').innerText = vol;
-            document.getElementById('kpi-speed').childNodes[0].nodeValue = speed + ' ';
-            document.getElementById('kpi-los').innerText = los;
+                headerState = { ...DEFAULT_HEADER };
+                serviceData = [ ...DEFAULT_SERVICES ];
+                incidents = [ ...DEFAULT_INCIDENTS ];
+                barChartData = [ ...DEFAULT_BAR_DATA ];
+                pieChartData = [ ...DEFAULT_PIE_DATA ];
 
-            closeModal('headerModal');
-            showToast("Header & KPI berhasil disesuaikan!");
+                renderHeader();
+                renderServiceTable();
+                renderIncidents();
+
+                barChartInstance.data.datasets[0].data = barChartData;
+                barChartInstance.update();
+
+                pieChartInstance.data.datasets[0].data = pieChartData;
+                pieChartInstance.update();
+
+                closeModal('headerModal');
+                showToast("Seluruh data telah di-reset ke nilai default awal!");
+            }
         }
 
         /* ----------------------------------------------------
-           8. PAGE INITIALIZATION
+           10. INITIALIZATION ON LOAD
         ---------------------------------------------------- */
         window.onload = function() {
+            renderHeader();
             initMap();
             renderIncidents();
             renderServiceTable();
             initCharts();
-            buildBarInputs();
-            buildPieInputs();
 
-            // Modal open hooks
+            // Modal backdrop listener
             document.onclick = function(e) {
                 if (e.target.id === 'chartBarModal') closeModal('chartBarModal');
                 if (e.target.id === 'chartPieModal') closeModal('chartPieModal');
