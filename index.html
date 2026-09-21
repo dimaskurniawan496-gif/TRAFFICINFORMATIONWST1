@@ -39,6 +39,8 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js DataLabels Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -169,7 +171,7 @@
         <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 flex justify-between items-start shadow-md relative overflow-hidden">
             <div>
                 <p class="text-xs font-medium text-slate-400 mb-1">Insiden Aktif Tahun 2026</p>
-                <h3 id="kpi-incident-count" class="text-2xl md:text-3xl font-extrabold text-rose-500"> 6 Lokasi</h3>
+                <h3 id="kpi-incident-count" class="text-2xl md:text-3xl font-extrabold text-rose-500">6 Lokasi</h3>
                 <p id="kpi-incident-detail" class="text-[11px] font-medium text-slate-300 mt-2">
                     Faktor: <span id="kpi-factors">6 Manusia, 0 Jalan, 0 Kendaraan</span><br>
                     <span class="text-slate-400 font-mono" id="kpi-casualties">LR : 3, LB : 1, MD : 1</span>
@@ -251,9 +253,22 @@
 
             <!-- Traffic Service Summary Grid -->
             <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 shadow-md">
-                <h2 class="text-xs font-bold text-white uppercase tracking-wider mb-3">
-                    Monitoring and Management of Toll Road Traffic Services
-                </h2>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                    <h2 class="text-xs font-bold text-white uppercase tracking-wider">
+                        Monitoring and Management of Toll Road Traffic Services
+                    </h2>
+                    
+                    <!-- Year Selector Toggle Buttons (2026 / 2027) -->
+                    <div class="flex items-center bg-navy-900 border border-slate-700 rounded-lg p-0.5 text-xs">
+                        <span class="text-[10px] text-slate-400 px-2 font-medium">Tahun:</span>
+                        <button id="year-btn-2026" onclick="selectServiceYear('2026')" class="year-btn px-2.5 py-1 rounded-md font-semibold text-xs transition bg-blue-600 text-white shadow">
+                            2026
+                        </button>
+                        <button id="year-btn-2027" onclick="selectServiceYear('2027')" class="year-btn px-2.5 py-1 rounded-md font-semibold text-xs transition text-slate-400 hover:text-white">
+                            2027
+                        </button>
+                    </div>
+                </div>
                 
                 <div class="grid grid-cols-2 gap-3">
                     <!-- Service 1 -->
@@ -306,9 +321,14 @@
             <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 shadow-md flex-1 flex flex-col justify-between">
                 <div>
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                        <h2 class="text-xs font-bold text-white uppercase tracking-wider">
-                            RINCIAN HARIAN PELAYANAN LALU LINTAS
-                        </h2>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-xs font-bold text-white uppercase tracking-wider">
+                                RINCIAN HARIAN PELAYANAN LALU LINTAS
+                            </h2>
+                            <span id="table-year-badge" class="bg-blue-900/80 text-blue-300 text-[10px] font-semibold px-2 py-0.5 rounded border border-blue-700/50">
+                                TAHUN 2026
+                            </span>
+                        </div>
                         <div class="flex items-center gap-2">
                             <button onclick="syncTotals()" class="bg-blue-900/50 hover:bg-blue-800/80 text-blue-300 border border-blue-700/50 text-[11px] font-medium px-2.5 py-1 rounded transition flex items-center gap-1">
                                 <i class="fa-solid fa-rotate"></i> Sync Total
@@ -340,7 +360,7 @@
                     </div>
                 </div>
                 <div class="text-[11px] text-slate-500 mt-2 text-right">
-                    Menampilkan data harian tersimpan
+                    Menampilkan data harian tersimpan untuk tahun <span id="footer-year-label" class="font-bold text-slate-300">2026</span>
                 </div>
             </div>
 
@@ -462,14 +482,23 @@
         </div>
     </div>
 
-    <!-- Modal 2: Input Service Data -->
+    <!-- Modal 2: Input Service Data (With Year Choice) -->
     <div id="serviceModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-navy-800 border border-slate-700 rounded-xl w-full max-w-md p-5 shadow-2xl">
             <h3 class="text-base font-bold text-white mb-4 border-b border-slate-700 pb-2">+ Input Data Pelayanan Lalu Lintas</h3>
             <form id="serviceForm" onsubmit="addServiceData(event)" class="space-y-3 text-xs">
-                <div>
-                    <label class="block text-slate-400 mb-1">Tanggal</label>
-                    <input type="date" id="input-service-date" required class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-400 mb-1">Tahun Pelayanan</label>
+                        <select id="input-service-year" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">Tanggal</label>
+                        <input type="date" id="input-service-date" required class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -604,11 +633,17 @@
         };
 
         const DEFAULT_SERVICES = [
-            { id: 1, date: '20/09/2026', penderekan: 8, bbm: 2, roda: 2, mesin: 1 },
-            { id: 2, date: '19/09/2026', penderekan: 2, bbm: 8, roda: 5, mesin: 2 },
-            { id: 3, date: '18/09/2026', penderekan: 8, bbm: 8, roda: 8, mesin: 0 },
-            { id: 4, date: '17/09/2026', penderekan: 8, bbm: 0, roda: 1, mesin: 2 },
-            { id: 5, date: '16/09/2026', penderekan: 3, bbm: 1, roda: 8, mesin: 1 }
+            // 2026 Data
+            { id: 1, year: '2026', date: '20/09/2026', penderekan: 8, bbm: 2, roda: 2, mesin: 1 },
+            { id: 2, year: '2026', date: '19/09/2026', penderekan: 2, bbm: 8, roda: 5, mesin: 2 },
+            { id: 3, year: '2026', date: '18/09/2026', penderekan: 8, bbm: 8, roda: 8, mesin: 0 },
+            { id: 4, year: '2026', date: '17/09/2026', penderekan: 8, bbm: 0, roda: 1, mesin: 2 },
+            { id: 5, year: '2026', date: '16/09/2026', penderekan: 3, bbm: 1, roda: 8, mesin: 1 },
+            
+            // 2027 Sample Data
+            { id: 6, year: '2027', date: '05/01/2027', penderekan: 4, bbm: 5, roda: 3, mesin: 2 },
+            { id: 7, year: '2027', date: '04/01/2027', penderekan: 6, bbm: 3, roda: 4, mesin: 1 },
+            { id: 8, year: '2027', date: '03/01/2027', penderekan: 2, bbm: 7, roda: 2, mesin: 3 }
         ];
 
         const DEFAULT_INCIDENTS = [
@@ -652,7 +687,8 @@
             SERVICES: 'TIC_SERVICE_DATA',
             INCIDENTS: 'TIC_INCIDENT_DATA',
             BAR_CHART: 'TIC_BAR_CHART_DATA',
-            PIE_CHART: 'TIC_PIE_CHART_DATA'
+            PIE_CHART: 'TIC_PIE_CHART_DATA',
+            SELECTED_YEAR: 'TIC_SELECTED_SERVICE_YEAR'
         };
 
         function loadFromStorage(key, fallback) {
@@ -679,6 +715,7 @@
         let incidents = loadFromStorage(STORAGE_KEYS.INCIDENTS, DEFAULT_INCIDENTS);
         let barChartData = loadFromStorage(STORAGE_KEYS.BAR_CHART, DEFAULT_BAR_DATA);
         let pieChartData = loadFromStorage(STORAGE_KEYS.PIE_CHART, DEFAULT_PIE_DATA);
+        let selectedServiceYear = loadFromStorage(STORAGE_KEYS.SELECTED_YEAR, '2026');
 
         let activeFilter = 'Semua';
         let barChartInstance = null;
@@ -723,6 +760,9 @@
 
         function openModal(id) {
             if (id === 'headerModal') populateHeaderModal();
+            if (id === 'serviceModal') {
+                document.getElementById('input-service-year').value = selectedServiceYear;
+            }
             document.getElementById(id).classList.remove('hidden');
         }
 
@@ -1003,39 +1043,72 @@
         }
 
         /* ----------------------------------------------------
-           7. TRAFFIC SERVICES & LOCALSTORAGE
+           7. TRAFFIC SERVICES BY YEAR & LOCALSTORAGE
         ---------------------------------------------------- */
+        function selectServiceYear(year) {
+            selectedServiceYear = year;
+            saveToStorage(STORAGE_KEYS.SELECTED_YEAR, year);
+
+            // Update UI Button Styles
+            const btn2026 = document.getElementById('year-btn-2026');
+            const btn2027 = document.getElementById('year-btn-2027');
+
+            if (year === '2026') {
+                btn2026.className = "year-btn px-2.5 py-1 rounded-md font-semibold text-xs transition bg-blue-600 text-white shadow";
+                btn2027.className = "year-btn px-2.5 py-1 rounded-md font-semibold text-xs transition text-slate-400 hover:text-white";
+            } else {
+                btn2027.className = "year-btn px-2.5 py-1 rounded-md font-semibold text-xs transition bg-blue-600 text-white shadow";
+                btn2026.className = "year-btn px-2.5 py-1 rounded-md font-semibold text-xs transition text-slate-400 hover:text-white";
+            }
+
+            // Update Table Headers and Footers
+            document.getElementById('table-year-badge').innerText = `TAHUN ${year}`;
+            document.getElementById('footer-year-label').innerText = year;
+
+            renderServiceTable();
+            showToast(`Menampilkan data pelayanan lalu lintas tahun ${year}`);
+        }
+
         function renderServiceTable() {
             const tbody = document.getElementById('service-table-body');
             tbody.innerHTML = '';
 
-            serviceData.forEach((row, idx) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-navy-700/40 transition border-b border-slate-800/80";
-                tr.innerHTML = `
-                    <td class="p-2 text-center text-slate-400 font-semibold">${idx + 1}</td>
-                    <td class="p-2 font-medium text-slate-200">${row.date}</td>
-                    <td class="p-2 text-center text-blue-400">${row.penderekan}</td>
-                    <td class="p-2 text-center text-emerald-400">${row.bbm}</td>
-                    <td class="p-2 text-center text-amber-400">${row.roda}</td>
-                    <td class="p-2 text-center text-rose-400">${row.mesin}</td>
-                    <td class="p-2 text-center">
-                        <button onclick="deleteServiceRow(${row.id})" class="text-rose-400 hover:text-rose-300 p-1 rounded hover:bg-rose-950/50">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+            // Filter service data by the selected year (with fallback to 2026 if not specified)
+            const filteredData = serviceData.filter(item => (item.year || '2026') === selectedServiceYear);
 
-            calculateServiceTotals();
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-500 text-xs">Belum ada data pelayanan untuk tahun ${selectedServiceYear}.</td></tr>`;
+            } else {
+                filteredData.forEach((row, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-navy-700/40 transition border-b border-slate-800/80";
+                    tr.innerHTML = `
+                        <td class="p-2 text-center text-slate-400 font-semibold">${idx + 1}</td>
+                        <td class="p-2 font-medium text-slate-200">${row.date}</td>
+                        <td class="p-2 text-center text-blue-400">${row.penderekan}</td>
+                        <td class="p-2 text-center text-emerald-400">${row.bbm}</td>
+                        <td class="p-2 text-center text-amber-400">${row.roda}</td>
+                        <td class="p-2 text-center text-rose-400">${row.mesin}</td>
+                        <td class="p-2 text-center">
+                            <button onclick="deleteServiceRow(${row.id})" class="text-rose-400 hover:text-rose-300 p-1 rounded hover:bg-rose-950/50">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            calculateServiceTotals(filteredData);
         }
 
-        function calculateServiceTotals() {
-            const totPenderekan = serviceData.reduce((acc, curr) => acc + curr.penderekan, 0);
-            const totBbm = serviceData.reduce((acc, curr) => acc + curr.bbm, 0);
-            const totRoda = serviceData.reduce((acc, curr) => acc + curr.roda, 0);
-            const totMesin = serviceData.reduce((acc, curr) => acc + curr.mesin, 0);
+        function calculateServiceTotals(dataList) {
+            const list = dataList || serviceData.filter(item => (item.year || '2026') === selectedServiceYear);
+            
+            const totPenderekan = list.reduce((acc, curr) => acc + curr.penderekan, 0);
+            const totBbm = list.reduce((acc, curr) => acc + curr.bbm, 0);
+            const totRoda = list.reduce((acc, curr) => acc + curr.roda, 0);
+            const totMesin = list.reduce((acc, curr) => acc + curr.mesin, 0);
 
             document.getElementById('count-penderekan').innerText = `${totPenderekan} Layanan`;
             document.getElementById('count-bbm').innerText = `${totBbm} Layanan`;
@@ -1045,6 +1118,7 @@
 
         function addServiceData(e) {
             e.preventDefault();
+            const yearVal = document.getElementById('input-service-year').value;
             const dateVal = document.getElementById('input-service-date').value;
             const p = parseInt(document.getElementById('input-penderekan').value) || 0;
             const b = parseInt(document.getElementById('input-bbm').value) || 0;
@@ -1056,6 +1130,7 @@
 
             const newRow = {
                 id: Date.now(),
+                year: yearVal,
                 date: formattedDate,
                 penderekan: p,
                 bbm: b,
@@ -1066,9 +1141,11 @@
             serviceData.unshift(newRow);
             saveToStorage(STORAGE_KEYS.SERVICES, serviceData);
 
-            renderServiceTable();
+            // Switch view to match added item's year
+            selectServiceYear(yearVal);
+
             closeModal('serviceModal');
-            showToast("Data harian pelayanan berhasil disimpan!");
+            showToast(`Data harian pelayanan tahun ${yearVal} berhasil disimpan!`);
             document.getElementById('serviceForm').reset();
         }
 
@@ -1081,13 +1158,17 @@
 
         function syncTotals() {
             calculateServiceTotals();
-            showToast("Total layanan berhasil disinkronisasi");
+            showToast(`Total layanan tahun ${selectedServiceYear} berhasil disinkronisasi`);
         }
 
         /* ----------------------------------------------------
            8. CHART.JS ANALYTICS & LOCALSTORAGE
         ---------------------------------------------------- */
         function initCharts() {
+            if (typeof ChartDataLabels !== 'undefined') {
+                Chart.register(ChartDataLabels);
+            }
+
             // Bar Chart Configuration
             const ctxBar = document.getElementById('barChart').getContext('2d');
             barChartInstance = new Chart(ctxBar, {
@@ -1106,6 +1187,11 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            top: 20
+                        }
+                    },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
@@ -1114,6 +1200,18 @@
                             bodyColor: '#cbd5e1',
                             borderColor: '#334155',
                             borderWidth: 1
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#ec4899',
+                            font: {
+                                weight: 'bold',
+                                size: 11
+                            },
+                            formatter: function(value) {
+                                return value;
+                            }
                         }
                     },
                     scales: {
@@ -1153,6 +1251,9 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
+                        datalabels: {
+                            display: false
+                        },
                         legend: {
                             position: 'right',
                             labels: {
@@ -1254,15 +1355,17 @@
                 localStorage.removeItem(STORAGE_KEYS.INCIDENTS);
                 localStorage.removeItem(STORAGE_KEYS.BAR_CHART);
                 localStorage.removeItem(STORAGE_KEYS.PIE_CHART);
+                localStorage.removeItem(STORAGE_KEYS.SELECTED_YEAR);
 
                 headerState = { ...DEFAULT_HEADER };
                 serviceData = [ ...DEFAULT_SERVICES ];
                 incidents = [ ...DEFAULT_INCIDENTS ];
                 barChartData = [ ...DEFAULT_BAR_DATA ];
                 pieChartData = [ ...DEFAULT_PIE_DATA ];
+                selectedServiceYear = '2026';
 
                 renderHeader();
-                renderServiceTable();
+                selectServiceYear('2026');
                 renderIncidents();
 
                 barChartInstance.data.datasets[0].data = barChartData;
@@ -1283,7 +1386,7 @@
             renderHeader();
             initMap();
             renderIncidents();
-            renderServiceTable();
+            selectServiceYear(selectedServiceYear);
             initCharts();
 
             // Modal backdrop listener
