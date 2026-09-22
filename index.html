@@ -957,7 +957,7 @@
 
         // LEAFLET MAP INITIALIZATION
         function initLeafletMap() {
-            map = L.map('map', { zoomControl: true }).setView([-3.1326, 104.7536], 12);
+            map = L.map('map', { zoomControl: true }).setView([-3.0907341981868197, 104.80215884583538], 12);
 
             // Esri World Imagery Satellite Tile
             L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -965,22 +965,93 @@
                 maxZoom: 18
             }).addTo(map);
 
-            // Standby Central Monitoring Marker (-3.1326, 104.7536)
+            // Standby Central Monitoring Marker (-3.0907341981868197, 104.80215884583538)
             const mainIcon = L.divIcon({
                 className: 'custom-main-pin',
                 html: `<div class="w-6 h-6 bg-cyan-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center animate-bounce text-black text-[10px] font-bold"><i class="fa-solid fa-crosshairs"></i></div>`,
                 iconSize: [24, 24],
                 iconAnchor: [12, 12]
             });
-            L.marker([-3.1326, 104.7536], { icon: mainIcon })
+            L.marker([-3.0907341981868197, 104.80215884583538], { icon: mainIcon })
                 .addTo(map)
-                .bindPopup("<b>Pos Pusat Pemantauan TIC</b><br>Koordinat Utama: -3.1326, 104.7536");
+                .bindPopup("<b>Pos Pusat Pemantauan SMARTOL</b><br>Koordinat Utama: -3.0907341981868197, 104.80215884583538");
+            L.marker([-3.090788, 104.801128], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>Rest Area KM 360 B</b><br>Koordinat: -3.090788, 104.801128");
+            L.marker([-3.071135, 104.736390], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>GT Kramasan</b><br>2 Entrance, 2 Exit");
+            L.marker([-3.342497, 104.838696], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 330+000 / GT Kayuagung Utama</b><br>3 Entrance, 3 Exit");
+            L.marker([-3.334820, 104.842297], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 331+000 </b><br>");
+            L.marker([-3.325889, 104.846514], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 332+000 </b><br>");
+            L.marker([-3.317511, 104.849588], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 333+000 </b><br>");
+            L.marker([-3.308721, 104.849930], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 334+000 </b><br>");
+            L.marker([-3.299776, 104.849421], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 335+000 </b><br>");
+            L.marker([-3.291287, 104.845601], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 336+000 </b><br>");
+            L.marker([-3.284134, 104.839888], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 337+000 </b><br>");
+            L.marker([-3.276537, 104.835031], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 338+000 </b><br>");
+            L.marker([-3.268770, 104.830154], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 339+000 </b><br>");
+            L.marker([-3.260778, 104.826983], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 340+000 </b><br>");
+            L.marker([-3.071577, 104.744636], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 367+000 </b><br>");
+            L.marker([-3.069692, 104.753881], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 366+000 </b><br>");
+            L.marker([-3.071058, 104.762368], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 365+000 </b><br>");
+            L.marker([-3.074519, 104.771438], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 364+000 </b><br>");
+            L.marker([-3.077583, 104.779709], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 363+000 </b><br>");
+            L.marker([-3.080536, 104.787498], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 362+000 </b><br>");
+            L.marker([-3.085373, 104.795375], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 361+000 </b><br>");
+            L.marker([-3.091587, 104.801011], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 360+000 </b><br>");
+            L.marker([-3.099729, 104.806226], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 359+000 </b><br>");
+            L.marker([-3.104899, 104.813828], { icon: mainIcon})
+                .addTo(map)
+                .bindPopup("<b>KM 358+000 </b><br>");
+
+
 
             updateMapMarkers();
         }
 
         function resetMapView() {
-            map.setView([-3.1326, 104.7536], 12);
+            map.setView([-3.0907341981868197, 104.80215884583538], 12);
         }
 
         function updateMapMarkers() {
