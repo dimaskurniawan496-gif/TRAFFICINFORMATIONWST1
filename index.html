@@ -1,1403 +1,1640 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRAFFIC INFORMATION CENTER (TIC) - Jalan Tol Kayuagung - Palembang</title>
-    
-    <!-- Tailwind CSS -->
+    <title>Traffic Information Center (TIC) - Jalan Tol Kayuagung - Palembang</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        navy: {
-                            900: '#070a14',
-                            800: '#0b1021',
-                            700: '#131b36',
-                            600: '#1c284f',
-                            500: '#28386b'
-                        },
-                        brand: {
-                            blue: '#1d4ed8',
-                            cyan: '#06b6d4',
-                            amber: '#f59e0b',
-                            emerald: '#10b981',
-                            rose: '#ef4444'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- Leaflet CSS & JS -->
+    <!-- Leaflet CSS & JS for Satellite Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <!-- Chart.js -->
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Chart.js DataLabels Plugin -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-
-    <!-- Font Awesome Icons -->
+    <!-- FontAwesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Google Font: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #070a14;
+            background-color: #0b0f19;
             color: #e2e8f0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
-        /* Custom Scrollbar */
+        .card-dark {
+            background-color: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 0.5rem;
+        }
+        .card-header-dark {
+            background-color: #1f2937;
+            border-bottom: 1px solid #374151;
+        }
+        /* Custom scrollbar for dark theme */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #0b1021;
+            background: #0b0f19;
         }
         ::-webkit-scrollbar-thumb {
-            background: #1c284f;
+            background: #374151;
             border-radius: 3px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #28386b;
-        }
-        .leaflet-container {
-            background: #0b1021 !important;
+            background: #4b5563;
         }
     </style>
 </head>
-<body class="bg-navy-900 text-slate-200 min-h-screen flex flex-col p-2 md:p-4 gap-4">
+<body class="min-h-screen p-3 md:p-4 space-y-4">
 
-    <!-- HEADER BAR -->
-    <header class="bg-navy-800 border border-slate-800 rounded-xl p-3 md:p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 shadow-lg">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-blue-900/40">
-                <i class="fa-solid me-0.5 fa-road"></i>
-            </div>
-            <div>
-                <h1 id="header-title-container" class="text-base md:text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                    <span id="header-title">TRAFFIC INFORMATION CENTER (TIC)</span> 
-                    <span id="header-subtitle" class="text-blue-400 font-normal text-sm md:text-base">Jalan Tol Kayuagung - Palembang</span>
-                </h1>
-                <p id="header-dev" class="text-xs text-slate-400">Development BY Operasi PT. Waskita Sriwijaya Tol</p>
+    <!-- HEADER / TOP NAVBAR -->
+    <header class="card-dark p-3 md:p-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 shadow-lg">
+        <div>
+            <div class="flex items-center gap-2">
+                <div class="bg-blue-600 text-white p-2 rounded-lg font-bold text-xl">
+                    <i class="fa-solid font-bold fa-road"></i> TIC
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold tracking-wide text-white">
+                        SMARTOL (Sistem Monitoring Analitik Real Time Operasi Tol) <span class="text-blue-400 font-normal text-sm md:text-base">| Jalan Tol Kayuagung - Palembang</span>
+                    </h1>
+                    <p class="text-xs text-gray-400">Development By : Operasi PT. Waskita Sriwijaya Tol (WELCOME TIC WST)</p>
+                </div>
             </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 md:gap-3 text-xs w-full lg:w-auto justify-start lg:justify-end">
-            <!-- Persistence Badge -->
-            <div class="flex items-center gap-1.5 bg-blue-950/80 border border-blue-700/60 px-2.5 py-1.5 rounded-lg text-blue-300 font-medium text-[11px]" title="Semua data tersimpan otomatis di browser">
-                <i class="fa-solid fa-floppy-disk text-blue-400"></i>
-                <span>Auto-Saved</span>
+        <div class="flex flex-wrap items-center gap-2 text-xs md:text-sm">
+            <!-- System Status -->
+            <span class="px-3 py-1.5 rounded-md bg-emerald-950 text-emerald-400 border border-emerald-800 font-semibold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> SISTEM ONLINE
+            </span>
+            
+            <!-- Live Clock & Weather -->
+            <div class="px-3 py-1.5 rounded-md bg-gray-800 text-gray-200 border border-gray-700 flex items-center gap-2">
+                <i class="fa-solid fa-cloud-sun text-amber-400"></i> Cerah, 31°C
             </div>
-
-            <!-- Online Status -->
-            <div class="flex items-center gap-2 bg-emerald-950/60 border border-emerald-800/60 px-3 py-1.5 rounded-lg text-emerald-400 font-semibold">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                <span>SISTEM ONLINE</span>
-            </div>
-
-            <!-- Weather -->
-            <div id="weather-badge" class="flex items-center gap-2 bg-navy-700 border border-slate-700 px-3 py-1.5 rounded-lg text-amber-300 font-medium">
-                <i class="fa-solid fa-sun text-amber-400"></i>
-                <span id="weather-text">Cerah, 31°C</span>
-            </div>
-
-            <!-- Real-time Clock -->
-            <div class="flex items-center gap-2 bg-navy-700 border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300 font-mono">
+            <div class="px-3 py-1.5 rounded-md bg-gray-800 text-gray-200 border border-gray-700 font-mono flex items-center gap-2">
                 <i class="fa-regular fa-clock text-blue-400"></i>
-                <span id="live-clock">--:--:-- WIB</span>
+                <span id="liveClock">--:--:-- WIB</span>
             </div>
 
-            <!-- Edit Header Button -->
-            <button onclick="openModal('headerModal')" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-medium px-3 py-1.5 rounded-lg transition text-xs shadow">
-                <i class="fa-solid fa-gear"></i> Edit Header & KPI
+            <!-- Global Year Selection -->
+            <div class="flex items-center bg-gray-800 rounded-md p-1 border border-gray-700">
+                <span class="text-xs font-semibold px-2 text-gray-400">Tahun:</span>
+                <button onclick="setGlobalYear('2025')" id="btnYear2025" class="px-2.5 py-1 text-xs rounded font-medium transition">2025</button>
+                <button onclick="setGlobalYear('2026')" id="btnYear2026" class="px-2.5 py-1 text-xs rounded font-medium transition">2026</button>
+                <button onclick="setGlobalYear('2027')" id="btnYear2027" class="px-2.5 py-1 text-xs rounded font-medium transition">2027</button>
+            </div>
+
+
             </button>
         </div>
     </header>
 
-    <!-- TOP KPI CARDS GRID -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <!-- Card 1: Total Kendaraan -->
-        <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 flex justify-between items-start shadow-md relative overflow-hidden">
-            <div>
-                <p class="text-xs font-medium text-slate-400 mb-1">Total Kendaraan / Jam</p>
-                <h3 id="kpi-volume" class="text-2xl md:text-3xl font-extrabold text-white">380</h3>
-                <p id="kpi-volume-status" class="text-xs font-semibold text-emerald-400 mt-2 flex items-center gap-1">
-                    <i class="fa-solid fa-arrow-trend-up"></i> <span id="kpi-volume-status-text">Volume Normal</span>
-                </p>
+    <!-- SECTION 1: TOP 4 KPI CARDS WITH DIRECT EDIT BUTTONS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- KPI 1: Total Kendaraan -->
+        <div class="card-dark p-4 relative group hover:border-blue-500/50 transition">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="text-xs font-medium text-gray-400 block mb-1">Total Kendaraan / Jam</span>
+                    <div class="text-3xl font-extrabold text-white tracking-tight" id="kpiVolume">380</div>
+                    <span id="kpiVolumeBadge" class="inline-block mt-2 text-xs font-semibold px-2.5 py-0.5 rounded bg-emerald-900/80 text-emerald-300 border border-emerald-700">
+                        ▲ Volume Normal
+                    </span>
+                </div>
+                <div class="p-3 bg-blue-900/40 text-blue-400 rounded-lg border border-blue-800">
+                    <i class="fa-solid fa-car text-xl"></i>
+                </div>
             </div>
-            <div class="w-10 h-10 rounded-lg bg-blue-950/80 border border-blue-800/50 text-blue-400 flex items-center justify-center text-lg">
-                <i class="fa-solid fa-car"></i>
-            </div>
+            <button onclick="openKpiModal('volume')" class="mt-3 w-full py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs rounded border border-gray-700 font-medium transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-sliders text-blue-400"></i> Input Data Volume
+            </button>
         </div>
 
-        <!-- Card 2: Kecepatan Rata-Rata -->
-        <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 flex justify-between items-start shadow-md relative overflow-hidden">
-            <div>
-                <p class="text-xs font-medium text-slate-400 mb-1">Kecepatan Rata-Rata</p>
-                <h3 id="kpi-speed-container" class="text-2xl md:text-3xl font-extrabold text-white"><span id="kpi-speed">80</span> <span class="text-sm font-normal text-slate-400">km/jam</span></h3>
-                <p id="kpi-speed-status" class="text-xs font-semibold text-amber-400 mt-2 flex items-center gap-1">
-                    <i class="fa-solid fa-triangle-exclamation"></i> <span id="kpi-speed-status-text">-3.1% padat merayap</span>
-                </p>
+        <!-- KPI 2: Kecepatan Rata-Rata -->
+        <div class="card-dark p-4 relative group hover:border-amber-500/50 transition">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="text-xs font-medium text-gray-400 block mb-1">Kecepatan Rata-Rata</span>
+                    <div class="text-3xl font-extrabold text-white tracking-tight" id="kpiSpeed">80 <span class="text-base font-normal text-gray-400">km/jam</span></div>
+                    <span id="kpiSpeedBadge" class="inline-block mt-2 text-xs font-semibold px-2.5 py-0.5 rounded bg-amber-900/80 text-amber-300 border border-amber-700">
+                        ● -3.1% padat merayap
+                    </span>
+                </div>
+                <div class="p-3 bg-amber-900/40 text-amber-400 rounded-lg border border-amber-800">
+                    <i class="fa-solid fa-gauge-high text-xl"></i>
+                </div>
             </div>
-            <div class="w-10 h-10 rounded-lg bg-amber-950/80 border border-amber-800/50 text-amber-400 flex items-center justify-center text-lg">
-                <i class="fa-solid fa-gauge-high"></i>
-            </div>
+            <button onclick="openKpiModal('speed')" class="mt-3 w-full py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs rounded border border-gray-700 font-medium transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-sliders text-amber-400"></i> Input Data Kecepatan
+            </button>
         </div>
 
-        <!-- Card 3: Tingkat Pelayanan (LOS) -->
-        <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 flex justify-between items-start shadow-md relative overflow-hidden">
-            <div>
-                <p class="text-xs font-medium text-slate-400 mb-1">Tingkat Pelayanan (LOS)</p>
-                <h3 id="kpi-los" class="text-2xl md:text-3xl font-extrabold text-emerald-400">Kategori B</h3>
-                <p id="kpi-los-status" class="text-xs font-semibold text-emerald-400 mt-2 flex items-center gap-1">
-                    <i class="fa-solid fa-check-circle"></i> <span id="kpi-los-status-text">Arus Stabil / Lancar</span>
-                </p>
+        <!-- KPI 3: Tingkat Pelayanan (LOS) -->
+        <div class="card-dark p-4 relative group hover:border-emerald-500/50 transition">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="text-xs font-medium text-gray-400 block mb-1">Tingkat Pelayanan (LOS)</span>
+                    <div class="text-2xl font-bold text-emerald-400 tracking-tight" id="kpiLos">Kategori B</div>
+                    <span id="kpiLosBadge" class="inline-block mt-2 text-xs font-semibold px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
+                        ● Arus Stabil / Lancar
+                    </span>
+                </div>
+                <div class="p-3 bg-emerald-900/40 text-emerald-400 rounded-lg border border-emerald-800">
+                    <i class="fa-solid fa-chart-line text-xl"></i>
+                </div>
             </div>
-            <div class="w-10 h-10 rounded-lg bg-emerald-950/80 border border-emerald-800/50 text-emerald-400 flex items-center justify-center text-lg">
-                <i class="fa-solid fa-chart-line"></i>
-            </div>
+            <button onclick="openKpiModal('los')" class="mt-3 w-full py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs rounded border border-gray-700 font-medium transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-sliders text-emerald-400"></i> Input Data LOS
+            </button>
         </div>
 
-        <!-- Card 4: Insiden Aktif -->
-        <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 flex justify-between items-start shadow-md relative overflow-hidden">
-            <div>
-                <p class="text-xs font-medium text-slate-400 mb-1">Insiden Aktif Tahun 2026</p>
-                <h3 id="kpi-incident-count" class="text-2xl md:text-3xl font-extrabold text-rose-500">6 Lokasi</h3>
-                <p id="kpi-incident-detail" class="text-[11px] font-medium text-slate-300 mt-2">
-                    Faktor: <span id="kpi-factors">6 Manusia, 0 Jalan, 0 Kendaraan</span><br>
-                    <span class="text-slate-400 font-mono" id="kpi-casualties">LR : 3, LB : 1, MD : 1</span>
-                </p>
-            </div>
-            <div class="w-10 h-10 rounded-lg bg-rose-950/80 border border-rose-800/50 text-rose-400 flex items-center justify-center text-lg">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
-        </div>
-    </section>
-
-    <!-- MAIN CONTENT GRID (3 COLUMNS) -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
-
-        <!-- LEFT COLUMN: Satellite Map & Incident Live Feed -->
-        <div class="lg:col-span-4 flex flex-col gap-4">
-            
-            <!-- Map Container -->
-            <div class="bg-navy-800 border border-slate-800 rounded-xl p-3 flex flex-col gap-2 shadow-md">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-map-location-dot text-blue-400"></i> Peta Koridor Satelit Tol Kayuagung - Palembang
-                    </h2>
-                    <div class="flex gap-1.5 text-[11px]">
-                        <button onclick="toggleMapLayer()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-2 py-0.5 rounded flex items-center gap-1">
-                            <i class="fa-solid fa-layer-group"></i> Layer
-                        </button>
-                        <button onclick="resetMapView()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-2 py-0.5 rounded flex items-center gap-1">
-                            <i class="fa-solid fa-arrows-to-dot"></i> Reset
-                        </button>
+        <!-- KPI 4: Insiden Aktif -->
+        <div class="card-dark p-4 relative group hover:border-red-500/50 transition">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="text-xs font-medium text-gray-400 block mb-1">Insiden Aktif Tahun <span id="kpiIncidentYearDisplay">2026</span></span>
+                    <div class="text-2xl font-bold text-red-500 tracking-tight" id="kpiIncidentTitle">3 Lokasi</div>
+                    <div class="text-[11px] text-gray-400 mt-1 leading-tight" id="kpiIncidentCauses">
+                        Faktor Penyebab: <span class="text-gray-200">6 Manusia, 0 Jalan, 0 Kendaraan</span>
+                    </div>
+                    <div class="text-[11px] text-red-400 font-medium mt-0.5" id="kpiIncidentVictims">
+                        LR : 3, LB : 1, MD : 1
                     </div>
                 </div>
+                <div class="p-3 bg-red-900/40 text-red-400 rounded-lg border border-red-800">
+                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                </div>
+            </div>
+            <button onclick="openKpiModal('incident')" class="mt-3 w-full py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs rounded border border-gray-700 font-medium transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-sliders text-red-400"></i> Input Data Insiden Aktif
+            </button>
+        </div>
 
-                <!-- Leaflet Canvas -->
-                <div id="map" class="h-80 w-full rounded-lg border border-slate-700/80 overflow-hidden relative"></div>
+    </div>
 
-                <!-- Legend -->
-                <div class="flex flex-wrap items-center justify-between gap-2 pt-1 px-1 text-[11px]">
-                    <span class="flex items-center gap-1.5 text-slate-300"><span class="w-3 h-1 bg-emerald-500 rounded-full"></span> Lancar (KM 0-18)</span>
-                    <span class="flex items-center gap-1.5 text-slate-300"><span class="w-3 h-1 bg-amber-500 rounded-full"></span> Padat (KM 18-32)</span>
-                    <span class="flex items-center gap-1.5 text-slate-300"><span class="w-3 h-1 bg-rose-500 rounded-full"></span> Bencana/Kerja</span>
+    <!-- SECTION 2: MAP & LIVE INCIDENTS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        
+        <!-- LEAFLET SATELLITE MAP (2 COLUMNS) -->
+        <div class="lg:col-span-2 card-dark p-4 flex flex-col">
+            <div class="flex justify-between items-center mb-3">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-satellite text-blue-400"></i>
+                    <h2 class="text-sm font-bold text-white uppercase tracking-wider">Peta Koridor Satelit Tol Kayuagung - Palembang</h2>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-400 bg-gray-800 px-2.5 py-1 rounded border border-gray-700 font-mono">
+                    </span>
+                    <button onclick="resetMapView()" class="px-2.5 py-1 text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 rounded border border-gray-700 font-medium">
+                        <i class="fa-solid fa-arrows-to-eye"></i> Reset View
+                    </button>
                 </div>
             </div>
 
-            <!-- Live Laporan Kejadian Card -->
-            <div class="bg-navy-800 border border-slate-800 rounded-xl p-3 flex flex-col gap-3 shadow-md flex-1">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-bullhorn text-amber-400"></i> LAPORAN KEJADIAN LIVE
-                    </h2>
-                    <div class="flex gap-1 text-[11px]">
-                        <button onclick="openModal('reportModal')" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-2.5 py-1 rounded shadow">
-                            + Laporan
-                        </button>
-                        <button onclick="resetIncidentsFilter()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-2 py-1 rounded">
-                            Reset Filter
-                        </button>
+            <!-- MAP CONTAINER -->
+            <div id="map" class="w-full h-80 md:h-[380px] rounded-lg border border-gray-800 relative z-0"></div>
+        </div>
+
+        <!-- LAPORAN KEJADIAN LIVE (1 COLUMN) -->
+        <div class="card-dark p-4 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-bullhorn text-amber-400"></i>
+                        <h2 class="text-sm font-bold text-white uppercase tracking-wider">Laporan Kejadian Live</h2>
                     </div>
+                    <button onclick="openModal('modalAddIncident')" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-plus"></i> + Laporan
+                    </button>
                 </div>
 
-                <!-- Filters -->
-                <div class="flex flex-wrap gap-1 text-[11px]" id="incident-filters">
-                    <button onclick="filterIncidents('Semua')" class="filter-btn active bg-blue-600 text-white px-2.5 py-0.5 rounded-full font-medium">Semua</button>
-                    <button onclick="filterIncidents('Kecelakaan')" class="filter-btn bg-navy-700 hover:bg-navy-600 text-slate-300 px-2.5 py-0.5 rounded-full">Kecelakaan</button>
-                    <button onclick="filterIncidents('Banjir')" class="filter-btn bg-navy-700 hover:bg-navy-600 text-slate-300 px-2.5 py-0.5 rounded-full">Banjir</button>
-                    <button onclick="filterIncidents('Kebakaran Hutan')" class="filter-btn bg-navy-700 hover:bg-navy-600 text-slate-300 px-2.5 py-0.5 rounded-full">Kebakaran Hutan</button>
+                <!-- Filter Category Badges -->
+                <div class="flex flex-wrap gap-1.5 mb-3">
+                    <button onclick="filterIncidents('semua')" id="btnIncFilterSemua" class="px-2.5 py-1 text-xs rounded bg-blue-600 text-white font-medium">Semua</button>
+                    <button onclick="filterIncidents('Kecelakaan')" id="btnIncFilterKecelakaan" class="px-2.5 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 font-medium">Kecelakaan</button>
+                    <button onclick="filterIncidents('Banjir')" id="btnIncFilterBanjir" class="px-2.5 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 font-medium">Banjir</button>
+                    <button onclick="filterIncidents('Gangguan Perjalanan')" id="btnIncFilterGangguanPerjalanan" class="px-2.5 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 font-medium">Gangguan Perjalanan</button>
+                    <button onclick="filterIncidents('Pecah Ban')" id="btnIncFilterPecahBan" class="px-2.5 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 font-medium">Pecah Ban</button>
+                    <button onclick="filterIncidents('Habis BBM')" id="btnIncFilterHabisBBM" class="px-2.5 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 font-medium">Habis BBM</button>
+                    <button onclick="filterIncidents('Mogok')" id="btnIncFilterMogok" class="px-2.5 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 font-medium">Mogok</button>
+                    <button onclick="filterIncidents('Titik AWAL km 330+086')" id="btnIncFilterTitikAWALkm330086" class="px-2.5 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 font-medium">Titik AWAL km 330+086</button>
+                    <button onclick="filterIncidents('Titik Akhir KM 367+750')" id="btnIncFilterTitikAkhirKM367750" class="px-2.5 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 font-medium">Titik Akhir KM 367+750</button>
+                    <button onclick="filterIncidents('Kendala Kaki kaki')" id="btnIncFilterKendalaKakiKaki" class="px-2.5 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 font-medium">Kendala Kaki kaki</button>
+                    <button onclick="filterIncidents('Kebakaran')" id="btnIncFilterKebakaran" class="px-2.5 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 font-medium">Kebakaran</button>
+                    <button onclick="filterIncidents('TIC Operasi PT. WST')" id="btnIncFilterTICOperasiPTWST" class="px-2.5 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 font-medium">TIC Operasi PT. WST</button>
                 </div>
 
-                <!-- Feed List -->
-                <div id="incident-feed" class="flex flex-col gap-2 overflow-y-auto max-h-56 pr-1">
+                <!-- Incident Scroll List -->
+                <div id="incidentListContainer" class="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
                     <!-- Dynamic rendering via JS -->
                 </div>
             </div>
-
-        </div>
-
-        <!-- CENTER COLUMN: Service Summary & Daily Details Table -->
-        <div class="lg:col-span-5 flex flex-col gap-4">
-
-            <!-- Traffic Service Summary Grid -->
-            <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 shadow-md">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                    <h2 class="text-xs font-bold text-white uppercase tracking-wider">
-                        Monitoring and Management of Toll Road Traffic Services
-                    </h2>
-                    
-                    <!-- Year Selector Toggle Buttons (2026 / 2027) -->
-                    <div class="flex items-center bg-navy-900 border border-slate-700 rounded-lg p-0.5 text-xs">
-                        <span class="text-[10px] text-slate-400 px-2 font-medium">Tahun:</span>
-                        <button id="year-btn-2026" onclick="selectServiceYear('2026')" class="year-btn px-2.5 py-1 rounded-md font-semibold text-xs transition bg-blue-600 text-white shadow">
-                            2026
-                        </button>
-                        <button id="year-btn-2027" onclick="selectServiceYear('2027')" class="year-btn px-2.5 py-1 rounded-md font-semibold text-xs transition text-slate-400 hover:text-white">
-                            2027
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <!-- Service 1 -->
-                    <div class="bg-navy-700/60 border border-slate-700/80 rounded-xl p-3 flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-blue-900/60 text-blue-400 flex items-center justify-center text-lg flex-shrink-0">
-                            <i class="fa-solid fa-truck-pickup"></i>
-                        </div>
-                        <div>
-                            <p class="text-[11px] font-medium text-slate-400">Penderekan</p>
-                            <h4 id="count-penderekan" class="text-sm font-bold text-white">0 Layanan</h4>
-                        </div>
-                    </div>
-
-                    <!-- Service 2 -->
-                    <div class="bg-navy-700/60 border border-slate-700/80 rounded-xl p-3 flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-emerald-900/60 text-emerald-400 flex items-center justify-center text-lg flex-shrink-0">
-                            <i class="fa-solid fa-gas-pump"></i>
-                        </div>
-                        <div>
-                            <p class="text-[11px] font-medium text-slate-400">Habis BBM</p>
-                            <h4 id="count-bbm" class="text-sm font-bold text-white">0 Layanan</h4>
-                        </div>
-                    </div>
-
-                    <!-- Service 3 -->
-                    <div class="bg-navy-700/60 border border-slate-700/80 rounded-xl p-3 flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-amber-900/60 text-amber-400 flex items-center justify-center text-lg flex-shrink-0">
-                            <i class="fa-solid fa-compact-disc"></i>
-                        </div>
-                        <div>
-                            <p class="text-[11px] font-medium text-slate-400">Kendala Roda</p>
-                            <h4 id="count-roda" class="text-sm font-bold text-white">0 Layanan</h4>
-                        </div>
-                    </div>
-
-                    <!-- Service 4 -->
-                    <div class="bg-navy-700/60 border border-slate-700/80 rounded-xl p-3 flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-rose-900/60 text-rose-400 flex items-center justify-center text-lg flex-shrink-0">
-                            <i class="fa-solid fa-wrench"></i>
-                        </div>
-                        <div>
-                            <p class="text-[11px] font-medium text-slate-400">Kendala Mesin</p>
-                            <h4 id="count-mesin" class="text-sm font-bold text-white">0 Layanan</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rincian Harian Pelayanan Lalu Lintas Table -->
-            <div class="bg-navy-800 border border-slate-800 rounded-xl p-4 shadow-md flex-1 flex flex-col justify-between">
-                <div>
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                        <div class="flex items-center gap-2">
-                            <h2 class="text-xs font-bold text-white uppercase tracking-wider">
-                                RINCIAN HARIAN PELAYANAN LALU LINTAS
-                            </h2>
-                            <span id="table-year-badge" class="bg-blue-900/80 text-blue-300 text-[10px] font-semibold px-2 py-0.5 rounded border border-blue-700/50">
-                                TAHUN 2026
-                            </span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="syncTotals()" class="bg-blue-900/50 hover:bg-blue-800/80 text-blue-300 border border-blue-700/50 text-[11px] font-medium px-2.5 py-1 rounded transition flex items-center gap-1">
-                                <i class="fa-solid fa-rotate"></i> Sync Total
-                            </button>
-                            <button onclick="openModal('serviceModal')" class="bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-semibold px-3 py-1 rounded transition shadow">
-                                + Input Data
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Data Table -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-navy-700/80 text-slate-400 uppercase text-[10px] font-semibold tracking-wider">
-                                <tr>
-                                    <th class="p-2 text-center">NO</th>
-                                    <th class="p-2">TANGGAL</th>
-                                    <th class="p-2 text-center">PENDEREKAN</th>
-                                    <th class="p-2 text-center">HABIS BBM</th>
-                                    <th class="p-2 text-center">KENDALA RODA</th>
-                                    <th class="p-2 text-center">KENDALA MESIN</th>
-                                    <th class="p-2 text-center">AKSI</th>
-                                </tr>
-                            </thead>
-                            <tbody id="service-table-body" class="divide-y divide-slate-800 text-slate-300 font-mono">
-                                <!-- Dynamic JS Population -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="text-[11px] text-slate-500 mt-2 text-right">
-                    Menampilkan data harian tersimpan untuk tahun <span id="footer-year-label" class="font-bold text-slate-300">2026</span>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- RIGHT COLUMN: Analytics Charts -->
-        <div class="lg:col-span-3 flex flex-col gap-4">
-
-            <!-- Bar Chart: Dashboard Analitik Kecelakaan -->
-            <div class="bg-navy-800 border border-slate-800 rounded-xl p-3 shadow-md flex flex-col gap-2">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                        <i class="fa-solid fa-chart-column text-blue-400"></i> DASHBOARD ANALITIK KECELAKAAN
-                    </h2>
-                    <div class="flex gap-1 text-[10px]">
-                        <button onclick="openBarChartModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-0.5 rounded">Edit Data</button>
-                        <button onclick="resetBarChart()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-1.5 py-0.5 rounded">Reset</button>
-                    </div>
-                </div>
-
-                <!-- Canvas -->
-                <div class="h-44 w-full relative">
-                    <canvas id="barChart"></canvas>
-                </div>
-
-                <!-- YoY Note -->
-                <p id="bar-yoy-note" class="text-[10px] text-emerald-400 font-medium text-center flex items-center justify-center gap-1">
-                    <i class="fa-solid fa-arrow-down"></i> Penurunan YoY: -89.5% (2021 vs 2026)
-                </p>
-            </div>
-
-            <!-- Pie Chart: Persentase Golongan Kendaraan -->
-            <div class="bg-navy-800 border border-slate-800 rounded-xl p-3 shadow-md flex flex-col gap-2 flex-1">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                        <i class="fa-solid fa-chart-pie text-cyan-400"></i> PERSENTASE GOLONGAN KENDARAAN
-                    </h2>
-                    <div class="flex gap-1 text-[10px]">
-                        <button onclick="openPieChartModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-0.5 rounded">Edit Data</button>
-                        <button onclick="resetPieChart()" class="bg-navy-700 hover:bg-navy-600 text-slate-300 border border-slate-700 px-1.5 py-0.5 rounded">Reset</button>
-                    </div>
-                </div>
-
-                <!-- Pie Canvas -->
-                <div class="h-44 w-full relative flex justify-center items-center my-auto">
-                    <canvas id="pieChart"></canvas>
-                </div>
-            </div>
-
         </div>
 
     </div>
 
-    <!-- MODALS SECTION -->
+    <!-- SECTION 3: MONITORING SERVICES & STANDBY FLEET -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        
+        <!-- SERVICES & TABLE (2 COLUMNS) -->
+        <div class="lg:col-span-2 card-dark p-4 flex flex-col justify-between">
+            <div>
+                <!-- Section Title & Year Tabs -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-4 pb-3 border-b border-gray-800">
+                    <div>
+                        <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-headset text-blue-400"></i> Monitoring and Management of Toll Road Traffic Services
+                        </h2>
+                        <p class="text-xs text-gray-400">Layanan Tanggap Darurat Lalu Lintas Jalan Tol</p>
+                    </div>
 
-    <!-- Modal 1: Edit Header & KPI -->
-    <div id="headerModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-navy-800 border border-slate-700 rounded-xl w-full max-w-md p-5 shadow-2xl">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-2">
-                <h3 class="text-base font-bold text-white">Edit Header & KPI System</h3>
-                <button onclick="resetToInitialDefaults()" class="bg-rose-950/80 hover:bg-rose-900 border border-rose-800 text-rose-300 text-[10px] font-medium px-2 py-1 rounded flex items-center gap-1" title="Kembalikan semua data ke pengaturan awal">
-                    <i class="fa-solid fa-rotate-left"></i> Reset Default
+                    <!-- Year Tabs for Service Section -->
+                    <div class="flex items-center gap-1 bg-gray-800 p-1 rounded-lg border border-gray-700">
+                        <span class="text-xs text-gray-400 px-2 font-medium">Tahun:</span>
+                        <button onclick="setServiceYear('2025')" id="btnServYear2025" class="px-3 py-1 text-xs rounded font-semibold transition">2025</button>
+                        <button onclick="setServiceYear('2026')" id="btnServYear2026" class="px-3 py-1 text-xs rounded font-semibold transition">2026</button>
+                        <button onclick="setServiceYear('2027')" id="btnServYear2027" class="px-3 py-1 text-xs rounded font-semibold transition">2027</button>
+                    </div>
+                </div>
+
+                <!-- Service Category Summaries -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                    <div class="bg-gray-800/80 p-3 rounded-lg border border-gray-700/80 flex items-center gap-3">
+                        <div class="p-2.5 bg-blue-900/60 text-blue-400 rounded-lg">
+                            <i class="fa-solid fa-truck-pickup text-lg"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] text-gray-400 block">Penderekan</span>
+                            <span id="totalDerek" class="text-lg font-bold text-white">0</span> <span class="text-xs text-gray-400">Layanan</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800/80 p-3 rounded-lg border border-gray-700/80 flex items-center gap-3">
+                        <div class="p-2.5 bg-emerald-900/60 text-emerald-400 rounded-lg">
+                            <i class="fa-solid fa-gas-pump text-lg"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] text-gray-400 block">Habis BBM</span>
+                            <span id="totalBbm" class="text-lg font-bold text-white">0</span> <span class="text-xs text-gray-400">Layanan</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800/80 p-3 rounded-lg border border-gray-700/80 flex items-center gap-3">
+                        <div class="p-2.5 bg-amber-900/60 text-amber-400 rounded-lg">
+                            <i class="fa-solid fa-compact-disc text-lg"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] text-gray-400 block">Kendala Roda</span>
+                            <span id="totalRoda" class="text-lg font-bold text-white">0</span> <span class="text-xs text-gray-400">Layanan</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800/80 p-3 rounded-lg border border-gray-700/80 flex items-center gap-3">
+                        <div class="p-2.5 bg-red-900/60 text-red-400 rounded-lg">
+                            <i class="fa-solid fa-wrench text-lg"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] text-gray-400 block">Kendala Mesin</span>
+                            <span id="totalMesin" class="text-lg font-bold text-white">0</span> <span class="text-xs text-gray-400">Layanan</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Service Table Header & Controls -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+                    <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wide flex items-center gap-1.5">
+                        <i class="fa-solid fa-table-list text-blue-400"></i> Rincian Harian Pelayanan Lalu Lintas (<span id="serviceYearTitle">2026</span>)
+                    </h3>
+
+                    <div class="flex items-center gap-2">
+                        <!-- High Visibility Date Sorting Controls -->
+                        <div class="flex items-center bg-gray-800 rounded border border-gray-700 p-0.5">
+                            <span class="text-[11px] text-gray-400 px-2 font-medium">Sortir Tanggal:</span>
+                            <button onclick="toggleDateSort('desc')" id="btnSortDesc" class="px-2.5 py-1 text-xs rounded font-semibold transition flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-down-short-wide"></i> Terbaru (⬇)
+                            </button>
+                            <button onclick="toggleDateSort('asc')" id="btnSortAsc" class="px-2.5 py-1 text-xs rounded font-semibold transition flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-up-wide-short"></i> Terlama (⬆)
+                            </button>
+                        </div>
+
+                        <button onclick="openModal('modalAddService')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold shadow flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> + Input Data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table Data -->
+                <div class="overflow-x-auto rounded-lg border border-gray-800 max-h-[220px] overflow-y-auto">
+                    <table class="w-full text-xs text-left text-gray-300">
+                        <thead class="text-[11px] text-gray-400 uppercase bg-gray-800/90 sticky top-0 z-10">
+                            <tr>
+                                <th class="px-3 py-2 text-center">NO</th>
+                                <th class="px-3 py-2">TANGGAL</th>
+                                <th class="px-3 py-2 text-center">PENDEREKAN</th>
+                                <th class="px-3 py-2 text-center">HABIS BBM</th>
+                                <th class="px-3 py-2 text-center">KENDALA RODA</th>
+                                <th class="px-3 py-2 text-center">KENDALA MESIN</th>
+                                <th class="px-3 py-2 text-center">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="serviceTableBody" class="divide-y divide-gray-800">
+                            <!-- Render via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- LAYANAN KENDARAAN STANDBY PENANGANAN (1 COLUMN) -->
+        <div class="card-dark p-4 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-amber-400"></i> Kendaraan Standby
+                    </h2>
+                    <button onclick="openModal('modalAddVehicle')" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold rounded flex items-center gap-1">
+                        <i class="fa-solid fa-plus"></i> + Unit
+                    </button>
+                </div>
+                <p class="text-xs text-gray-400 mb-3">Armada Petugas Penanganan Darurat Siaga di Koridor Tol</p>
+
+                <!-- Vehicle List -->
+                <div id="standbyVehicleContainer" class="space-y-2.5 max-h-[310px] overflow-y-auto pr-1">
+                    <!-- Render via JS -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SECTION 4: CCTV & VMS MONITORING -->
+    <div class="card-dark p-4">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 pb-3 border-b border-gray-800">
+            <div>
+                <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-video text-emerald-400"></i> Status Monitoring Pemeliharaan CCTV & VMS
+                </h2>
+                <p class="text-xs text-gray-400">Pemantauan Perangkat Monitoring Visual dan Informasi Kepadatan Lalu Lintas Realtime</p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Status Badges -->
+                <span id="cctvStatsOnline" class="px-2.5 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded text-xs font-semibold">0 Online</span>
+                <span id="cctvStatsMaint" class="px-2.5 py-1 bg-amber-950 text-amber-400 border border-amber-800 rounded text-xs font-semibold">0 Maint</span>
+                <span id="cctvStatsOffline" class="px-2.5 py-1 bg-red-950 text-red-400 border border-red-800 rounded text-xs font-semibold">0 Offline</span>
+
+                <button onclick="openModal('modalAddDevice')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold shadow flex items-center gap-1">
+                    <i class="fa-solid fa-plus"></i> + Tambah Perangkat
                 </button>
             </div>
-            <form id="headerForm" onsubmit="saveHeaderConfig(event)" class="space-y-3 text-xs">
-                <div>
-                    <label class="block text-slate-400 mb-1">Judul Utama</label>
-                    <input type="text" id="input-title" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1">Sub-Judul Tol</label>
-                    <input type="text" id="input-subtitle" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1">Cuaca</label>
-                        <input type="text" id="input-weather" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">Vol Kendaraan/Jam</label>
-                        <input type="number" id="input-vol" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1">Status Vol Kendaraan</label>
-                        <input type="text" id="input-vol-status" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">Kecepatan (km/jam)</label>
-                        <input type="number" id="input-speed" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1">Kategori LOS</label>
-                        <input type="text" id="input-los" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">Status LOS</label>
-                        <input type="text" id="input-los-status" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1">Insiden Aktif (Text)</label>
-                        <input type="text" id="input-incident-count" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">Korban (LR, LB, MD)</label>
-                        <input type="text" id="input-casualties" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                    </div>
-                </div>
-                <div class="flex justify-end gap-2 pt-3">
-                    <button type="button" onclick="closeModal('headerModal')" class="bg-navy-700 hover:bg-navy-600 text-slate-300 px-3 py-1.5 rounded">Batal</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-1.5 rounded">Simpan Perubahan</button>
-                </div>
-            </form>
+        </div>
+
+        <!-- Device Filter Tabs -->
+        <div class="flex flex-wrap gap-2 mb-3 text-xs">
+            <button onclick="filterDevices('semua')" id="btnDevFilterSemua" class="px-3 py-1 rounded bg-blue-600 text-white font-medium">Semua Perangkat</button>
+            <button onclick="filterDevices('cctv')" id="btnDevFilterCctv" class="px-3 py-1 rounded bg-gray-800 text-gray-300 border border-gray-700 font-medium hover:bg-gray-700">CCTV KORIDOR</button>
+            <button onclick="filterDevices('vms')" id="btnDevFilterVms" class="px-3 py-1 rounded bg-gray-800 text-gray-300 border border-gray-700 font-medium hover:bg-gray-700">VMS (VARIABLE MESSAGE)</button>
+        </div>
+
+        <!-- Devices Grid -->
+        <div id="deviceGridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <!-- Dynamic JS Rendering -->
         </div>
     </div>
 
-    <!-- Modal 2: Input Service Data (With Year Choice) -->
-    <div id="serviceModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-navy-800 border border-slate-700 rounded-xl w-full max-w-md p-5 shadow-2xl">
-            <h3 class="text-base font-bold text-white mb-4 border-b border-slate-700 pb-2">+ Input Data Pelayanan Lalu Lintas</h3>
-            <form id="serviceForm" onsubmit="addServiceData(event)" class="space-y-3 text-xs">
-                <div class="grid grid-cols-2 gap-2">
+    <!-- SECTION 5: ANALYTICS CHARTS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        
+        <!-- ACCIDENT BAR CHART (2 COLUMNS) -->
+        <div class="lg:col-span-2 card-dark p-4 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-3">
                     <div>
-                        <label class="block text-slate-400 mb-1">Tahun Pelayanan</label>
-                        <select id="input-service-year" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
+                        <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-blue-400"></i> Dashboard Analitik Kecelakaan (2020 - 2027)
+                        </h2>
+                        <p class="text-xs text-gray-400">Statistik Frekuensi Kecelakaan Tahunan Koridor Tol</p>
+                    </div>
+
+                    <button onclick="openModal('modalEditAccidentChart')" class="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-blue-400 rounded text-xs font-semibold border border-gray-700 flex items-center gap-1">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit Data Grafik
+                    </button>
+                </div>
+
+                <div class="relative w-full h-[240px]">
+                    <canvas id="accidentBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- VEHICLE CLASS PIE CHART (1 COLUMN) -->
+        <div class="card-dark p-4 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-emerald-400"></i> Golongan Kendaraan
+                    </h2>
+                    <button onclick="openModal('modalEditPieChart')" class="px-2 py-1 bg-gray-800 hover:bg-gray-700 text-blue-400 rounded text-xs font-semibold border border-gray-700 flex items-center gap-1">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </button>
+                </div>
+
+                <div class="relative w-full h-[220px] flex justify-center items-center">
+                    <canvas id="vehiclePieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ==================== MODALS FOR DATA INPUT ==================== -->
+
+    <!-- MODAL 1: EDIT KPI HEADER METRICS -->
+    <div id="modalEditKpi" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
+        <div class="card-dark w-full max-w-md p-5 border border-gray-700 shadow-2xl relative">
+            <h3 id="modalKpiTitle" class="text-base font-bold text-white mb-4 border-b border-gray-800 pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-sliders text-blue-400"></i> Input Data KPI
+            </h3>
+
+            <form id="formKpiEdit" onsubmit="saveKpiData(event)" class="space-y-4">
+                <input type="hidden" id="kpiTargetField">
+
+                <!-- Volume Inputs -->
+                <div id="groupKpiVolume" class="space-y-3 hidden">
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Total Kendaraan / Jam</label>
+                        <input type="number" id="inputVolumeVal" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Status Volume</label>
+                        <input type="text" id="inputVolumeStatus" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Contoh: ▲ Volume Normal">
+                    </div>
+                </div>
+
+                <!-- Speed Inputs -->
+                <div id="groupKpiSpeed" class="space-y-3 hidden">
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Kecepatan Rata-Rata (km/jam)</label>
+                        <input type="number" id="inputSpeedVal" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Status Kecepatan</label>
+                        <input type="text" id="inputSpeedStatus" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Contoh: ● -3.1% padat merayap">
+                    </div>
+                </div>
+
+                <!-- LOS Inputs -->
+                <div id="groupKpiLos" class="space-y-3 hidden">
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Kategori LOS</label>
+                        <select id="inputLosCat" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="Kategori A">Kategori A (Sangat Arus Bebas)</option>
+                            <option value="Kategori B">Kategori B (Arus Stabil / Lancar)</option>
+                            <option value="Kategori C">Kategori C (Arus Stabil Terbatas)</option>
+                            <option value="Kategori D">Kategori D (Mendekati Padat)</option>
+                            <option value="Kategori E">Kategori E (Padat / Kapasitas Penuh)</option>
+                            <option value="Kategori F">Kategori F (Macet / Terhenti)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-slate-400 mb-1">Tanggal</label>
-                        <input type="date" id="input-service-date" required class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                        <label class="text-xs text-gray-300 block mb-1">Deskripsi Status LOS</label>
+                        <input type="text" id="inputLosStatus" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Contoh: ● Arus Stabil / Lancar">
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2">
+
+                <!-- Incident Inputs -->
+                <div id="groupKpiIncident" class="space-y-3 hidden">
                     <div>
-                        <label class="block text-slate-400 mb-1">Penderekan</label>
-                        <input type="number" min="0" id="input-penderekan" value="0" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                        <label class="text-xs text-gray-300 block mb-1">Jumlah Lokasi Insiden Aktif</label>
+                        <input type="text" id="inputIncTitle" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Contoh: 3 Lokasi">
                     </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">Habis BBM</label>
-                        <input type="number" min="0" id="input-bbm" value="0" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1">Manusia</label>
+                            <input type="number" id="inputIncHuman" class="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1.5 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1">Jalan</label>
+                            <input type="number" id="inputIncRoad" class="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1.5 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1">Kendaraan</label>
+                            <input type="number" id="inputIncVeh" class="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1.5 text-xs text-white">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1">Luka Ringan (LR)</label>
+                            <input type="number" id="inputIncLr" class="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1.5 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1">Luka Berat (LB)</label>
+                            <input type="number" id="inputIncLb" class="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1.5 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1">Meninggal (MD)</label>
+                            <input type="number" id="inputIncMd" class="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1.5 text-xs text-white">
+                        </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1">Kendala Roda</label>
-                        <input type="number" min="0" id="input-roda" value="0" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">Kendala Mesin</label>
-                        <input type="number" min="0" id="input-mesin" value="0" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                    </div>
-                </div>
-                <div class="flex justify-end gap-2 pt-3">
-                    <button type="button" onclick="closeModal('serviceModal')" class="bg-navy-700 hover:bg-navy-600 text-slate-300 px-3 py-1.5 rounded">Batal</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-1.5 rounded">Tambah Data</button>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-gray-800">
+                    <button type="button" onclick="closeModal('modalEditKpi')" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-xs font-medium">Batal</button>
+                    <button type="submit" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-bold">Simpan KPI</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal 3: Input Live Report Kejadian -->
-    <div id="reportModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-navy-800 border border-slate-700 rounded-xl w-full max-w-md p-5 shadow-2xl">
-            <h3 class="text-base font-bold text-white mb-4 border-b border-slate-700 pb-2">+ Tambah Laporan Kejadian Live</h3>
-            <form id="reportForm" onsubmit="addIncidentReport(event)" class="space-y-3 text-xs">
+    <!-- MODAL 2: TAMBAH LAPORAN KEJADIAN LIVE -->
+    <div id="modalAddIncident" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
+        <div class="card-dark w-full max-w-md p-5 border border-gray-700 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4 border-b border-gray-800 pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-bullhorn text-amber-400"></i> Tambah Laporan Kejadian Live
+            </h3>
+            <form onsubmit="saveIncident(event)" class="space-y-3">
                 <div>
-                    <label class="block text-slate-400 mb-1">Judul Kejadian</label>
-                    <input type="text" id="input-incident-title" placeholder="cth: Kecelakaan Beruntun 2 Mobil" required class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    <label class="text-xs text-gray-300 block mb-1">Judul / Jenis Kejadian</label>
+                    <input type="text" id="incJudul" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Misal: Kecelakaan Beruntun 2 Mobil">
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1">Kategori</label>
-                    <select id="input-incident-cat" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    <label class="text-xs text-gray-300 block mb-1">Kategori</label>
+                    <select id="incKategori" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
                         <option value="Kecelakaan">Kecelakaan</option>
                         <option value="Banjir">Banjir</option>
-                        <option value="Kebakaran Hutan">Kebakaran Hutan</option>
+                        <option value="Kebakaran">Kebakaran</option>
+                        <option value="Habis BBM">Habis BBM</option>
+                        <option value="Mogok">Mogok</option>
+                        <option value="Kendala Kaki kaki">Kendala Kaki kaki</option>
+                        <option value="Titik AWAL km 330+086">Titik AWAL km 330+086</option>
+                        <option value="Titik Akhir KM 367+750">Titik Akhir KM 367+750</option>
+                        <option value="TIC Operasi PT. WST">TIC Operasi PT. WST</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1">Lokasi KM & Jalur</label>
-                    <input type="text" id="input-incident-loc" placeholder="cth: Tol KM 32 Jalur A (Dekat Kramasan)" required class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                    <label class="text-xs text-gray-300 block mb-1">Lokasi KM / Jalur</label>
+                    <input type="text" id="incLokasi" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="Misal: Tol KM 32+400 Jalur A">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-slate-400 mb-1">Status Keadaan</label>
-                        <select id="input-incident-status" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                            <option value="Kritis">Kritis</option>
-                            <option value="Penanganan">Penanganan</option>
-                            <option value="Selesai">Selesai</option>
-                        </select>
+                        <label class="text-xs text-gray-300 block mb-1">Latitude</label>
+                        <input type="number" step="any" id="incLat" required value="-3.1326" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-xs text-white">
                     </div>
                     <div>
-                        <label class="block text-slate-400 mb-1">Status Petugas</label>
-                        <input type="text" id="input-incident-officer" placeholder="cth: Petugas Tiba" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                        <label class="text-xs text-gray-300 block mb-1">Longitude</label>
+                        <input type="number" step="any" id="incLng" required value="104.7536" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-xs text-white">
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1">Latitude (Opsional)</label>
-                        <input type="number" step="any" id="input-incident-lat" placeholder="-3.1326" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">Longitude (Opsional)</label>
-                        <input type="number" step="any" id="input-incident-lng" placeholder="104.7536" class="w-full bg-navy-900 border border-slate-700 rounded p-2 text-slate-200 focus:outline-none focus:border-blue-500">
-                    </div>
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Tingkat Keparahan</label>
+                    <select id="incKeparahan" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        <option value="Kritis">Parah (Merah)</option>
+                        <option value="Sedang">Sedang (Kuning)</option>
+                        <option value="Ringan">Ringan (Hijau)</option>
+                    </select>
                 </div>
-                <div class="flex justify-end gap-2 pt-3">
-                    <button type="button" onclick="closeModal('reportModal')" class="bg-navy-700 hover:bg-navy-600 text-slate-300 px-3 py-1.5 rounded">Batal</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-1.5 rounded">Kirim Laporan</button>
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Status Penanganan</label>
+                    <input type="text" id="incStatus" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white" placeholder="Misal: Petugas Tiba / Evakuasi">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-gray-800">
+                    <button type="button" onclick="closeModal('modalAddIncident')" class="px-3 py-1.5 bg-gray-800 text-gray-300 rounded text-xs">Batal</button>
+                    <button type="submit" class="px-4 py-1.5 bg-blue-600 text-white rounded text-xs font-bold">Simpan Laporan</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal 4: Edit Bar Chart Data -->
-    <div id="chartBarModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-navy-800 border border-slate-700 rounded-xl w-full max-w-sm p-5 shadow-2xl">
-            <h3 class="text-base font-bold text-white mb-4 border-b border-slate-700 pb-2">Edit Data Analitik Kecelakaan</h3>
-            <div id="bar-inputs" class="space-y-2 text-xs max-h-60 overflow-y-auto pr-1"></div>
-            <div class="flex justify-end gap-2 pt-3 border-t border-slate-700 mt-3">
-                <button type="button" onclick="closeModal('chartBarModal')" class="bg-navy-700 text-slate-300 px-3 py-1.5 rounded text-xs">Batal</button>
-                <button type="button" onclick="saveBarChartData()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-xs">Simpan</button>
-            </div>
+    <!-- MODAL 3: INPUT RINCIAN PELAYANAN HARIAN -->
+    <div id="modalAddService" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
+        <div class="card-dark w-full max-w-md p-5 border border-gray-700 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4 border-b border-gray-800 pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-plus text-emerald-400"></i> Input Data Pelayanan Harian (<span id="modalServiceYearTitle">2026</span>)
+            </h3>
+            <form onsubmit="saveServiceRecord(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Tanggal</label>
+                    <input type="date" id="servTanggal" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Penderekan</label>
+                        <input type="number" id="servDerek" min="0" value="0" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Habis BBM</label>
+                        <input type="number" id="servBbm" min="0" value="0" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Kendala Roda</label>
+                        <input type="number" id="servRoda" min="0" value="0" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Kendala Mesin</label>
+                        <input type="number" id="servMesin" min="0" value="0" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-gray-800">
+                    <button type="button" onclick="closeModal('modalAddService')" class="px-3 py-1.5 bg-gray-800 text-gray-300 rounded text-xs">Batal</button>
+                    <button type="submit" class="px-4 py-1.5 bg-emerald-600 text-white rounded text-xs font-bold">Simpan Rekap</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Modal 5: Edit Pie Chart Data -->
-    <div id="chartPieModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-navy-800 border border-slate-700 rounded-xl w-full max-w-sm p-5 shadow-2xl">
-            <h3 class="text-base font-bold text-white mb-4 border-b border-slate-700 pb-2">Edit Golongan Kendaraan</h3>
-            <div id="pie-inputs" class="space-y-2 text-xs max-h-60 overflow-y-auto pr-1"></div>
-            <div class="flex justify-end gap-2 pt-3 border-t border-slate-700 mt-3">
-                <button type="button" onclick="closeModal('chartPieModal')" class="bg-navy-700 text-slate-300 px-3 py-1.5 rounded text-xs">Batal</button>
-                <button type="button" onclick="savePieChartData()" class="bg-blue-600 text-white px-4 py-1.5 rounded text-xs">Simpan</button>
-            </div>
+    <!-- MODAL 4: TAMBAH ARMADA KENDARAAN STANDBY -->
+    <div id="modalAddVehicle" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
+        <div class="card-dark w-full max-w-md p-5 border border-gray-700 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4 border-b border-gray-800 pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-truck-monster text-amber-400"></i> Tambah Unit Kendaraan Standby
+            </h3>
+            <form onsubmit="saveVehicle(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Nama Unit / Kendaraan</label>
+                    <input type="text" id="vehNama" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white" placeholder="Misal: Mobil Derek 10 Ton - Unit 02">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Petugas / No. Plat</label>
+                    <input type="text" id="vehPetugas" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white" placeholder="Misal: Budi / BG 8012 XZ">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Lokasi Standby / Pos KM</label>
+                    <input type="text" id="vehLokasi" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white" placeholder="Misal: Pos KM 330 A">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Status Keberadaan</label>
+                    <select id="vehStatus" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white">
+                        <option value="Ready">Ready (Siaga)</option>
+                        <option value="Bertugas">Sedang Bertugas</option>
+                        <option value="Maintenance">Maintenance / Perbaikan</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-gray-800">
+                    <button type="button" onclick="closeModal('modalAddVehicle')" class="px-3 py-1.5 bg-gray-800 text-gray-300 rounded text-xs">Batal</button>
+                    <button type="submit" class="px-4 py-1.5 bg-amber-600 text-white rounded text-xs font-bold">Simpan Unit</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Toast Notification Container -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-xl text-xs font-medium translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
-        <i class="fa-solid fa-circle-check"></i>
-        <span id="toast-message">Notifikasi</span>
+    <!-- MODAL 5: TAMBAH PERANGKAT CCTV & VMS -->
+    <div id="modalAddDevice" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
+        <div class="card-dark w-full max-w-md p-5 border border-gray-700 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4 border-b border-gray-800 pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-video text-emerald-400"></i> Tambah Perangkat CCTV / VMS
+            </h3>
+            <form onsubmit="saveDevice(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Jenis Perangkat</label>
+                    <select id="devJenis" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white">
+                        <option value="cctv">CCTV Koridor</option>
+                        <option value="vms">VMS (Variable Message Sign)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Kode & Nama Perangkat</label>
+                    <input type="text" id="devNama" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white" placeholder="Misal: CCTV KM 345+100 Jalur A">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Lokasi Pemasangan</label>
+                    <input type="text" id="devLokasi" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white" placeholder="Misal: KM 345 Jalur A Kayuagung">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">IP Address</label>
+                    <input type="text" id="devIp" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white" placeholder="Misal: 192.168.10.42">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Status Operasional</label>
+                    <select id="devStatus" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm text-white">
+                        <option value="Online">Normal / Online</option>
+                        <option value="Maintenance">Maintenance / Perbaikan</option>
+                        <option value="Offline">Offline / Gangguan</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-gray-800">
+                    <button type="button" onclick="closeModal('modalAddDevice')" class="px-3 py-1.5 bg-gray-800 text-gray-300 rounded text-xs">Batal</button>
+                    <button type="submit" class="px-4 py-1.5 bg-emerald-600 text-white rounded text-xs font-bold">Simpan Perangkat</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- JAVASCRIPT & LOCALSTORAGE LOGIC -->
+    <!-- MODAL 6: EDIT GRAFIK KECELAKAAN (2020 - 2027) -->
+    <div id="modalEditAccidentChart" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
+        <div class="card-dark w-full max-w-lg p-5 border border-gray-700 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4 border-b border-gray-800 pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-chart-column text-blue-400"></i> Edit Data Grafik Kecelakaan (2020 - 2027)
+            </h3>
+            <form onsubmit="saveAccidentChartData(event)" class="space-y-3">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Tahun 2020</label>
+                        <input type="number" id="accVal2020" min="0" required class="w-full bg-gray-900 border border-gray-700 rounded px-2.5 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Tahun 2021</label>
+                        <input type="number" id="accVal2021" min="0" required class="w-full bg-gray-900 border border-gray-700 rounded px-2.5 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Tahun 2022</label>
+                        <input type="number" id="accVal2022" min="0" required class="w-full bg-gray-900 border border-gray-700 rounded px-2.5 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Tahun 2023</label>
+                        <input type="number" id="accVal2023" min="0" required class="w-full bg-gray-900 border border-gray-700 rounded px-2.5 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Tahun 2024</label>
+                        <input type="number" id="accVal2024" min="0" required class="w-full bg-gray-900 border border-gray-700 rounded px-2.5 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Tahun 2025</label>
+                        <input type="number" id="accVal2025" min="0" required class="w-full bg-gray-900 border border-gray-700 rounded px-2.5 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Tahun 2026</label>
+                        <input type="number" id="accVal2026" min="0" required class="w-full bg-gray-900 border border-gray-700 rounded px-2.5 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Tahun 2027</label>
+                        <input type="number" id="accVal2027" min="0" required class="w-full bg-gray-900 border border-gray-700 rounded px-2.5 py-1.5 text-xs text-white">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-gray-800">
+                    <button type="button" onclick="closeModal('modalEditAccidentChart')" class="px-3 py-1.5 bg-gray-800 text-gray-300 rounded text-xs">Batal</button>
+                    <button type="submit" class="px-4 py-1.5 bg-blue-600 text-white rounded text-xs font-bold">Update Grafik</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 7: EDIT GOLONGAN KENDARAAN (PIE CHART) -->
+    <div id="modalEditPieChart" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
+        <div class="card-dark w-full max-w-sm p-5 border border-gray-700 shadow-2xl">
+            <h3 class="text-base font-bold text-white mb-4 border-b border-gray-800 pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-chart-pie text-emerald-400"></i> Edit Persentase Golongan (%)
+            </h3>
+            <form onsubmit="savePieChartData(event)" class="space-y-3">
+                <div class="space-y-2">
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Golongan 1 (%)</label>
+                        <input type="number" id="pieGol1" min="0" max="100" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Golongan 2 (%)</label>
+                        <input type="number" id="pieGol2" min="0" max="100" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Golongan 3 (%)</label>
+                        <input type="number" id="pieGol3" min="0" max="100" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Golongan 4 (%)</label>
+                        <input type="number" id="pieGol4" min="0" max="100" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-1.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 block mb-1">Golongan 5 (%)</label>
+                        <input type="number" id="pieGol5" min="0" max="100" required class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-1.5 text-xs text-white">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-gray-800">
+                    <button type="button" onclick="closeModal('modalEditPieChart')" class="px-3 py-1.5 bg-gray-800 text-gray-300 rounded text-xs">Batal</button>
+                    <button type="submit" class="px-4 py-1.5 bg-emerald-600 text-white rounded text-xs font-bold">Update Pie</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
     <script>
-        /* ----------------------------------------------------
-           1. DEFAULT INITIAL MOCKUP DATA
-        ---------------------------------------------------- */
-        const DEFAULT_HEADER = {
-            title: 'TRAFFIC INFORMATION CENTER (TIC)',
-            subtitle: 'Jalan Tol Kayuagung - Palembang',
-            dev: 'Development BY Operasi PT. Waskita Sriwijaya Tol',
-            weather: 'Cerah, 31°C',
-            vol: 380,
-            volStatus: 'Volume Normal',
-            speed: 80,
-            speedStatus: '-3.1% padat merayap',
-            los: 'Kategori B',
-            losStatus: 'Arus Stabil / Lancar',
-            incidentCountText: '3 Lokasi',
-            factors: '6 Manusia, 0 Jalan, 0 Kendaraan',
-            casualties: 'LR : 3, LB : 1, MD : 1'
-        };
-
-        const DEFAULT_SERVICES = [
-            // 2026 Data
-            { id: 1, year: '2026', date: '20/09/2026', penderekan: 8, bbm: 2, roda: 2, mesin: 1 },
-            { id: 2, year: '2026', date: '19/09/2026', penderekan: 2, bbm: 8, roda: 5, mesin: 2 },
-            { id: 3, year: '2026', date: '18/09/2026', penderekan: 8, bbm: 8, roda: 8, mesin: 0 },
-            { id: 4, year: '2026', date: '17/09/2026', penderekan: 8, bbm: 0, roda: 1, mesin: 2 },
-            { id: 5, year: '2026', date: '16/09/2026', penderekan: 3, bbm: 1, roda: 8, mesin: 1 },
+        // DEFAULT INITIAL DATA
+        const DEFAULT_STATE = {
+            activeYear: '2026',
+            serviceSortOrder: 'desc', // 'desc' (terbaru) or 'asc' (terlama)
+            incFilter: 'semua',
+            devFilter: 'semua',
             
-            // 2027 Sample Data
-            { id: 6, year: '2027', date: '05/01/2027', penderekan: 4, bbm: 5, roda: 3, mesin: 2 },
-            { id: 7, year: '2027', date: '04/01/2027', penderekan: 6, bbm: 3, roda: 4, mesin: 1 },
-            { id: 8, year: '2027', date: '03/01/2027', penderekan: 2, bbm: 7, roda: 2, mesin: 3 }
-        ];
-
-        const DEFAULT_INCIDENTS = [
-            {
-                id: 1,
-                title: 'Kecelakaan Beruntun 2 Mobil',
-                category: 'Kecelakaan',
-                location: 'Tol KM 32 Jalur A (Dekat Kramasan)',
-                timeAgo: '5 Mnt Lalu',
-                status: 'Kritis',
-                statusColor: 'bg-rose-500/20 text-rose-400 border-rose-500/40',
-                officer: 'Petugas Tiba',
-                lat: -3.125,
-                lng: 104.750
+            kpi: {
+                volume: 380,
+                volumeStatus: '▲ Volume Normal',
+                speed: 80,
+                speedStatus: '● -3.1% padat merayap',
+                losCat: 'Kategori B',
+                losStatus: '● Arus Stabil / Lancar',
+                incTitle: '3 Lokasi',
+                incHuman: 6,
+                incRoad: 0,
+                incVeh: 0,
+                incLr: 3,
+                incLb: 1,
+                incMd: 1
             },
-            {
-                id: 2,
-                title: 'Genangan Air Akibat Hujan Deras',
-                category: 'Banjir',
-                location: 'Tol KM 14 Jalur B',
-                timeAgo: '25 Mnt Lalu',
-                status: 'Penanganan',
-                statusColor: 'bg-amber-500/20 text-amber-400 border-amber-500/40',
-                officer: 'Pembersihan Drainase',
-                lat: -3.200,
-                lng: 104.800
-            }
-        ];
 
-        const DEFAULT_BAR_DATA = [38, 56, 48, 24, 24, 17, 3];
-        const barLabels = ['2020', '2021', '2022', '2023', '2024', '2025', '2026'];
+            incidents: [
+                { id: 1, judul: "Kecelakaan Beruntun 2 Mobil", kategori: "Kecelakaan", lokasi: "Tol KM 32+400 Jalur A", lat: -3.1326, lng: 104.7536, keparahan: "Kritis", status: "Petugas Tiba" },
+                { id: 2, judul: "Genangan Air Hujan Hutan", kategori: "Banjir", lokasi: "KM 340+200 Jalur B", lat: -3.1400, lng: 104.7600, keparahan: "Sedang", status: "Pemantauan" }
+            ],
 
-        const DEFAULT_PIE_DATA = [65, 15, 10, 6, 4];
-        const pieLabels = ['Golongan 1', 'Golongan 2', 'Golongan 3', 'Golongan 4', 'Golongan 5'];
+            serviceRecords: {
+                '2025': [
+                    { id: 101, tanggal: '2025-12-30', derek: 5, bbm: 1, roda: 3, mesin: 2 },
+                    { id: 102, tanggal: '2025-12-29', derek: 2, bbm: 0, roda: 1, mesin: 0 }
+                ],
+                '2026': [
+                    { id: 201, tanggal: '2026-09-20', derek: 8, bbm: 2, roda: 2, mesin: 1 },
+                    { id: 202, tanggal: '2026-09-19', derek: 2, bbm: 0, roda: 5, mesin: 2 },
+                    { id: 203, tanggal: '2026-09-18', derek: 0, bbm: 3, roda: 0, mesin: 0 },
+                    { id: 204, tanggal: '2026-09-17', derek: 0, bbm: 0, roda: 1, mesin: 2 },
+                    { id: 205, tanggal: '2026-09-16', derek: 3, bbm: 1, roda: 0, mesin: 1 }
+                ],
+                '2027': [
+                    { id: 301, tanggal: '2027-01-05', derek: 1, bbm: 0, roda: 2, mesin: 0 }
+                ]
+            },
 
-        /* ----------------------------------------------------
-           2. STATE & LOCALSTORAGE WRAPPERS
-        ---------------------------------------------------- */
-        const STORAGE_KEYS = {
-            HEADER: 'TIC_HEADER_CONFIG',
-            SERVICES: 'TIC_SERVICE_DATA',
-            INCIDENTS: 'TIC_INCIDENT_DATA',
-            BAR_CHART: 'TIC_BAR_CHART_DATA',
-            PIE_CHART: 'TIC_PIE_CHART_DATA',
-            SELECTED_YEAR: 'TIC_SELECTED_SERVICE_YEAR'
+            standbyVehicles: [
+                { id: 1, nama: "Mobil Derek 10 Ton", petugas: "Sertu Budi / BG 8012 XZ", lokasi: "Pos KM 330 A", status: "Ready" },
+                { id: 2, nama: "Ambulance Penyelamat", petugas: "Dr. Danang / PT. Waskita", lokasi: "Pos Utama Kramasan", status: "Ready" },
+                { id: 3, nama: "Patroli PJR Tol 01", petugas: "Aiptu M. Yasin", lokasi: "KM 342 B Patroli", status: "Bertugas" },
+                { id: 4, nama: "Rescue & Fire Unit", petugas: "Tim Pemadam Tol", lokasi: "Pos KM 325 A", status: "Maintenance" }
+            ],
+
+            devices: [
+                { id: 1, jenis: "cctv", nama: "CCTV KM 335+200 A", lokasi: "KM 335 Jalur A", ip: "192.168.10.11", status: "Online" },
+                { id: 2, jenis: "cctv", nama: "CCTV Simpang Kramasan", lokasi: "Interchange Kramasan", ip: "192.168.10.15", status: "Online" },
+                { id: 3, jenis: "vms", nama: "VMS Display Kayuagung", lokasi: "Gerbang Tol Kayuagung", ip: "192.168.20.02", status: "Online" },
+                { id: 4, jenis: "vms", nama: "VMS Display Kramasan", lokasi: "KM 342 Sebelum GT", ip: "192.168.20.05", status: "Maintenance" },
+                { id: 5, jenis: "cctv", nama: "CCTV KM 325+800 B", lokasi: "KM 325 Jalur B", ip: "192.168.10.22", status: "Offline" }
+            ],
+
+            accidentChart: [38, 55, 45, 28, 28, 20, 15, 8], // 2020 to 2027
+            pieChart: [55, 20, 12, 8, 5] // Gol 1 - 5
         };
 
-        function loadFromStorage(key, fallback) {
-            try {
-                const stored = localStorage.getItem(key);
-                return stored ? JSON.parse(stored) : fallback;
-            } catch (e) {
-                console.error("Storage load error:", e);
-                return fallback;
-            }
-        }
+        // APPLICATION STATE VARIABLE
+        let appState = {};
 
-        function saveToStorage(key, value) {
-            try {
-                localStorage.setItem(key, JSON.stringify(value));
-            } catch (e) {
-                console.error("Storage save error:", e);
-            }
-        }
+        // MAP & CHARTS GLOBALS
+        let map, mapMarkers = [];
+        let accidentChartInstance = null;
+        let vehiclePieChartInstance = null;
 
-        // Active Application State
-        let headerState = loadFromStorage(STORAGE_KEYS.HEADER, DEFAULT_HEADER);
-        let serviceData = loadFromStorage(STORAGE_KEYS.SERVICES, DEFAULT_SERVICES);
-        let incidents = loadFromStorage(STORAGE_KEYS.INCIDENTS, DEFAULT_INCIDENTS);
-        let barChartData = loadFromStorage(STORAGE_KEYS.BAR_CHART, DEFAULT_BAR_DATA);
-        let pieChartData = loadFromStorage(STORAGE_KEYS.PIE_CHART, DEFAULT_PIE_DATA);
-        let selectedServiceYear = loadFromStorage(STORAGE_KEYS.SELECTED_YEAR, '2026');
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStateFromStorage();
+            initClock();
+            initLeafletMap();
+            initCharts();
+            renderAllComponents();
+        });
 
-        let activeFilter = 'Semua';
-        let barChartInstance = null;
-        let pieChartInstance = null;
-        let mapInstance = null;
-        let activeTileLayer = null;
-        let mapLayers = {};
-        let mapIncidentMarkers = [];
-
-        /* ----------------------------------------------------
-           3. UI HELPERS & REALTIME CLOCK
-        ---------------------------------------------------- */
-        function updateClock() {
-            const now = new Date();
-            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            
-            const dayName = days[now.getDay()];
-            const dateNum = String(now.getDate()).padStart(2, '0');
-            const monthName = months[now.getMonth()];
-            const year = now.getFullYear();
-
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-
-            const formatted = `${hours}:${minutes}:${seconds} WIB - ${dayName}, ${dateNum} ${monthName} ${year}`;
-            const el = document.getElementById('live-clock');
-            if (el) el.innerText = formatted;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-message').innerText = msg;
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
-        }
-
-        function openModal(id) {
-            if (id === 'headerModal') populateHeaderModal();
-            if (id === 'serviceModal') {
-                document.getElementById('input-service-year').value = selectedServiceYear;
-            }
-            document.getElementById(id).classList.remove('hidden');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
-        /* ----------------------------------------------------
-           4. RENDER HEADER & KPI
-        ---------------------------------------------------- */
-        function renderHeader() {
-            document.getElementById('header-title').innerText = headerState.title;
-            document.getElementById('header-subtitle').innerText = headerState.subtitle;
-            document.getElementById('header-dev').innerText = headerState.dev || 'Development BY Operasi PT. Waskita Sriwijaya Tol';
-            document.getElementById('weather-text').innerText = headerState.weather;
-
-            document.getElementById('kpi-volume').innerText = headerState.vol;
-            document.getElementById('kpi-volume-status-text').innerText = headerState.volStatus || 'Volume Normal';
-
-            document.getElementById('kpi-speed').innerText = headerState.speed;
-            document.getElementById('kpi-speed-status-text').innerText = headerState.speedStatus || '-3.1% padat merayap';
-
-            document.getElementById('kpi-los').innerText = headerState.los;
-            document.getElementById('kpi-los-status-text').innerText = headerState.losStatus || 'Arus Stabil / Lancar';
-
-            document.getElementById('kpi-incident-count').innerText = headerState.incidentCountText || '3 Lokasi';
-            document.getElementById('kpi-factors').innerText = headerState.factors || '6 Manusia, 0 Jalan, 0 Kendaraan';
-            document.getElementById('kpi-casualties').innerText = headerState.casualties || 'LR : 3, LB : 1, MD : 1';
-        }
-
-        function populateHeaderModal() {
-            document.getElementById('input-title').value = headerState.title;
-            document.getElementById('input-subtitle').value = headerState.subtitle;
-            document.getElementById('input-weather').value = headerState.weather;
-            document.getElementById('input-vol').value = headerState.vol;
-            document.getElementById('input-vol-status').value = headerState.volStatus || 'Volume Normal';
-            document.getElementById('input-speed').value = headerState.speed;
-            document.getElementById('input-speed-status').value = headerState.speedStatus || '-3.1% padat merayap';
-            document.getElementById('input-los').value = headerState.los;
-            document.getElementById('input-los-status').value = headerState.losStatus || 'Arus Stabil / Lancar';
-            document.getElementById('input-incident-count').value = headerState.incidentCountText || '3 Lokasi';
-            document.getElementById('input-casualties').value = headerState.casualties || 'LR : 3, LB : 1, MD : 1';
-        }
-
-        function saveHeaderConfig(e) {
-            e.preventDefault();
-            headerState = {
-                title: document.getElementById('input-title').value,
-                subtitle: document.getElementById('input-subtitle').value,
-                dev: headerState.dev,
-                weather: document.getElementById('input-weather').value,
-                vol: parseInt(document.getElementById('input-vol').value) || 0,
-                volStatus: document.getElementById('input-vol-status').value,
-                speed: parseInt(document.getElementById('input-speed').value) || 0,
-                speedStatus: document.getElementById('input-speed-status').value,
-                los: document.getElementById('input-los').value,
-                losStatus: document.getElementById('input-los-status').value,
-                incidentCountText: document.getElementById('input-incident-count').value,
-                factors: headerState.factors,
-                casualties: document.getElementById('input-casualties').value
-            };
-
-            saveToStorage(STORAGE_KEYS.HEADER, headerState);
-            renderHeader();
-            closeModal('headerModal');
-            showToast("Header & KPI berhasil disimpan ke LocalStorage!");
-        }
-
-        /* ----------------------------------------------------
-           5. LEAFLET MAP INTEGRATION
-        ---------------------------------------------------- */
-        function initMap() {
-            // Target Center Focus: lat -3.1326, lng 104.7536, zoom 12
-            const center = [-3.1326, 104.7536];
-            mapInstance = L.map('map', {
-                zoomControl: false,
-                attributionControl: false
-            }).setView(center, 12);
-
-            // Satellite Layer (Esri)
-            mapLayers.satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                maxZoom: 18
-            });
-
-            // Dark Vector Layer
-            mapLayers.dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                maxZoom: 19
-            });
-
-            mapLayers.satellite.addTo(mapInstance);
-            activeTileLayer = 'satellite';
-
-            L.control.zoom({ position: 'topleft' }).addTo(mapInstance);
-
-            // Corridor Polyline Routes
-            const coordsLancar = [
-                [-3.38, 104.84],
-                [-3.28, 104.81],
-                [-3.22, 104.79]
-            ];
-            const coordsPadat = [
-                [-3.22, 104.79],
-                [-3.14, 104.75]
-            ];
-            const coordsKerja = [
-                [-3.14, 104.75],
-                [-3.11, 104.73]
-            ];
-
-            L.polyline(coordsLancar, { color: '#10b981', weight: 6, opacity: 0.9 }).addTo(mapInstance);
-            L.polyline(coordsPadat, { color: '#f59e0b', weight: 6, opacity: 0.9 }).addTo(mapInstance);
-            L.polyline(coordsKerja, { color: '#ef4444', weight: 6, opacity: 0.9 }).addTo(mapInstance);
-
-            // Center Focus Marker
-            const focusIcon = L.divIcon({
-                className: 'custom-div-icon',
-                html: `<div style="background-color: #06b6d4; width: 18px; height: 18px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 12px #06b6d4;"></div>`,
-                iconSize: [18, 18],
-                iconAnchor: [9, 9]
-            });
-            L.marker(center, { icon: focusIcon }).addTo(mapInstance).bindPopup("<b>Pos Pantau Pemantauan Peta (-3.1326, 104.7536)</b>");
-
-            updateMapIncidentMarkers();
-        }
-
-        function updateMapIncidentMarkers() {
-            if (!mapInstance) return;
-            // Clear existing incident markers
-            mapIncidentMarkers.forEach(m => mapInstance.removeLayer(m));
-            mapIncidentMarkers = [];
-
-            incidents.forEach(inc => {
-                if (inc.lat && inc.lng) {
-                    const color = inc.status === 'Kritis' ? '#ef4444' : (inc.status === 'Penanganan' ? '#f59e0b' : '#3b82f6');
-                    const icon = L.divIcon({
-                        className: 'custom-div-icon',
-                        html: `<div style="background-color: ${color}; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 8px ${color};"></div>`,
-                        iconSize: [14, 14],
-                        iconAnchor: [7, 7]
-                    });
-                    const marker = L.marker([inc.lat, inc.lng], { icon }).addTo(mapInstance)
-                        .bindPopup(`<b>${inc.title}</b><br>${inc.location}<br><span style="color:${color}">${inc.status}</span>`);
-                    mapIncidentMarkers.push(marker);
+        // LOCAL STORAGE LOAD & SAVE
+        function loadStateFromStorage() {
+            const saved = localStorage.getItem('TIC_DASHBOARD_STATE');
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                } catch(e) {
+                    appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
                 }
-            });
+            } else {
+                appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+            }
         }
 
-        function toggleMapLayer() {
-            if (activeTileLayer === 'satellite') {
-                mapInstance.removeLayer(mapLayers.satellite);
-                mapLayers.dark.addTo(mapInstance);
-                activeTileLayer = 'dark';
-                showToast("Berhasil mengubah ke Peta Vektor Dark");
-            } else {
-                mapInstance.removeLayer(mapLayers.dark);
-                mapLayers.satellite.addTo(mapInstance);
-                activeTileLayer = 'satellite';
-                showToast("Berhasil mengubah ke Peta Satelit");
+        function saveStateToStorage() {
+            localStorage.setItem('TIC_DASHBOARD_STATE', JSON.stringify(appState));
+        }
+
+        function resetAllToDefault() {
+            if (confirm("Apakah Anda yakin ingin mengembalikan seluruh data ke status awal (default)?")) {
+                localStorage.removeItem('TIC_DASHBOARD_STATE');
+                appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                saveStateToStorage();
+                renderAllComponents();
+                updateChartsData();
+                alert("Sistem berhasil direset ke data default!");
             }
+        }
+
+        // LIVE CLOCK
+        function initClock() {
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('id-ID', { hour12: false }) + ' WIB';
+                const dateString = now.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+                document.getElementById('liveClock').innerText = `${timeString} - ${dateString}`;
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        // GLOBAL YEAR SWITCHER
+        function setGlobalYear(year) {
+            appState.activeYear = year;
+            saveStateToStorage();
+            renderAllComponents();
+        }
+
+        function setServiceYear(year) {
+            appState.activeYear = year;
+            saveStateToStorage();
+            renderAllComponents();
+        }
+
+        // LEAFLET MAP INITIALIZATION
+        function initLeafletMap() {
+            map = L.map('map', { zoomControl: true }).setView([-3.1326, 104.7536], 12);
+
+            // Esri World Imagery Satellite Tile
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Satellite',
+                maxZoom: 18
+            }).addTo(map);
+
+            // Standby Central Monitoring Marker (-3.1326, 104.7536)
+            const mainIcon = L.divIcon({
+                className: 'custom-main-pin',
+                html: `<div class="w-6 h-6 bg-cyan-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center animate-bounce text-black text-[10px] font-bold"><i class="fa-solid fa-crosshairs"></i></div>`,
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+            L.marker([-3.1326, 104.7536], { icon: mainIcon })
+                .addTo(map)
+                .bindPopup("<b>Pos Pusat Pemantauan TIC</b><br>Koordinat Utama: -3.1326, 104.7536");
+
+            updateMapMarkers();
         }
 
         function resetMapView() {
-            if (mapInstance) {
-                mapInstance.setView([-3.1326, 104.7536], 12);
-                showToast("Tampilan Peta Direset ke Pos Pemantauan (-3.1326, 104.7536)");
-            }
+            map.setView([-3.1326, 104.7536], 12);
         }
 
-        /* ----------------------------------------------------
-           6. LIVE INCIDENTS & LOCALSTORAGE
-        ---------------------------------------------------- */
-        function renderIncidents() {
-            const feedContainer = document.getElementById('incident-feed');
-            feedContainer.innerHTML = '';
+        function updateMapMarkers() {
+            // Clear existing markers
+            mapMarkers.forEach(m => map.removeLayer(m));
+            mapMarkers = [];
 
-            const filtered = incidents.filter(i => activeFilter === 'Semua' || i.category === activeFilter);
+            appState.incidents.forEach(inc => {
+                let color = 'bg-red-600';
+                if (inc.keparahan === 'Sedang') color = 'bg-amber-500';
+                if (inc.keparahan === 'Ringan') color = 'bg-emerald-500';
+
+                const icon = L.divIcon({
+                    className: 'custom-inc-pin',
+                    html: `<div class="w-5 h-5 ${color} rounded-full border-2 border-white shadow-md flex items-center justify-center text-white text-[9px] font-bold">!</div>`,
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                });
+
+                const marker = L.marker([inc.lat, inc.lng], { icon: icon })
+                    .addTo(map)
+                    .bindPopup(`<b>${inc.judul}</b><br>Status: ${inc.status}<br>Lokasi: ${inc.lokasi}`);
+
+                mapMarkers.push(marker);
+            });
+        }
+
+        function focusOnMap(lat, lng) {
+            map.setView([lat, lng], 14, { animate: true });
+        }
+
+
+        // RENDER ALL UI COMPONENTS
+        function renderAllComponents() {
+            renderKpiCards();
+            renderIncidentsList();
+            renderServiceSection();
+            renderStandbyVehicles();
+            renderDeviceGrid();
+            updateYearButtonsHighlight();
+        }
+
+        function updateYearButtonsHighlight() {
+            const y = appState.activeYear;
+            ['2025', '2026', '2027'].forEach(yr => {
+                const bG = document.getElementById(`btnYear${yr}`);
+                const bS = document.getElementById(`btnServYear${yr}`);
+                if (yr === y) {
+                    if (bG) bG.className = "px-2.5 py-1 text-xs rounded font-bold bg-blue-600 text-white shadow";
+                    if (bS) bS.className = "px-3 py-1 text-xs rounded font-bold bg-blue-600 text-white shadow";
+                } else {
+                    if (bG) bG.className = "px-2.5 py-1 text-xs rounded font-medium text-gray-300 hover:bg-gray-700";
+                    if (bS) bS.className = "px-3 py-1 text-xs rounded font-medium text-gray-300 hover:bg-gray-700";
+                }
+            });
+
+            document.getElementById('kpiIncidentYearDisplay').innerText = y;
+            document.getElementById('serviceYearTitle').innerText = y;
+            document.getElementById('modalServiceYearTitle').innerText = y;
+        }
+
+        // RENDER KPI CARDS
+        function renderKpiCards() {
+            const k = appState.kpi;
+            document.getElementById('kpiVolume').innerText = k.volume;
+            document.getElementById('kpiVolumeBadge').innerText = k.volumeStatus;
+
+            document.getElementById('kpiSpeed').innerHTML = `${k.speed} <span class="text-base font-normal text-gray-400">km/jam</span>`;
+            document.getElementById('kpiSpeedBadge').innerText = k.speedStatus;
+
+            document.getElementById('kpiLos').innerText = k.losCat;
+            document.getElementById('kpiLosBadge').innerText = k.losStatus;
+
+            document.getElementById('kpiIncidentTitle').innerText = k.incTitle;
+            document.getElementById('kpiIncidentCauses').innerHTML = `Faktor Penyebab: <span class="text-gray-200">${k.incHuman} Manusia, ${k.incRoad} Jalan, ${k.incVeh} Kendaraan</span>`;
+            document.getElementById('kpiIncidentVictims').innerText = `LR : ${k.incLr}, LB : ${k.incLb}, MD : ${k.incMd}`;
+        }
+
+        // RENDER INCIDENT FEED LIST
+        function renderIncidentsList() {
+            const container = document.getElementById('incidentListContainer');
+            container.innerHTML = '';
+
+            const filtered = appState.incidents.filter(inc => {
+                if (appState.incFilter === 'semua') return true;
+                return inc.kategori.toLowerCase().includes(appState.incFilter.toLowerCase());
+            });
 
             if (filtered.length === 0) {
-                feedContainer.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs">Tidak ada laporan kejadian.</div>`;
+                container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-4">Tidak ada laporan kejadian dalam kategori ini.</p>`;
                 return;
             }
 
             filtered.forEach(inc => {
-                const item = document.createElement('div');
-                item.className = "bg-navy-700/70 border border-slate-700/80 rounded-lg p-2.5 flex flex-col gap-1.5 hover:border-slate-600 transition";
-                item.innerHTML = `
-                    <div class="flex items-start justify-between">
-                        <h4 class="text-xs font-bold text-white leading-snug">${inc.title}</h4>
-                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded border ${inc.statusColor}">${inc.status}</span>
-                    </div>
-                    <p class="text-[11px] text-slate-400 flex items-center gap-1">
-                        <i class="fa-solid fa-location-dot text-rose-400"></i> ${inc.location}
-                    </p>
-                    <div class="flex items-center justify-between pt-1 border-t border-slate-800 text-[10px]">
-                        <span class="text-blue-400 font-medium">Status: ${inc.officer}</span>
-                        <div class="flex gap-1.5">
-                            <button onclick="focusMapLoc(${inc.lat || -3.1326}, ${inc.lng || 104.7536})" class="bg-navy-600 hover:bg-navy-500 text-slate-200 px-2 py-0.5 rounded border border-slate-600">
-                                <i class="fa-solid fa-crosshairs"></i> Peta
-                            </button>
-                            <button onclick="deleteIncident(${inc.id})" class="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800 px-2 py-0.5 rounded">
-                                Hapus
-                            </button>
+                let badgeColor = 'bg-red-950 text-red-300 border-red-800';
+                if (inc.keparahan === 'Sedang') badgeColor = 'bg-amber-950 text-amber-300 border-amber-800';
+                if (inc.keparahan === 'Ringan') badgeColor = 'bg-emerald-950 text-emerald-300 border-emerald-800';
+
+                const div = document.createElement('div');
+                div.className = "p-3 bg-gray-800/80 rounded-lg border border-gray-700 hover:border-gray-600 transition flex justify-between items-start gap-2";
+                div.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">${inc.judul}</span>
+                            <span class="px-1.5 py-0.5 text-[10px] rounded border font-semibold ${badgeColor}">${inc.keparahan}</span>
                         </div>
+                        <p class="text-[11px] text-gray-400"><i class="fa-solid fa-location-dot text-red-400"></i> ${inc.lokasi}</p>
+                        <p class="text-[11px] text-blue-300">Status: <span class="text-gray-200 font-medium">${inc.status}</span></p>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <button onclick="focusOnMap(${inc.lat}, ${inc.lng})" class="px-2 py-1 bg-blue-900/60 hover:bg-blue-800 text-blue-300 rounded text-[11px] border border-blue-700 flex items-center gap-1">
+                            <i class="fa-solid fa-crosshairs"></i> Peta
+                        </button>
+                        <button onclick="deleteIncident(${inc.id})" class="px-2 py-1 bg-red-900/60 hover:bg-red-800 text-red-300 rounded text-[11px] border border-red-700 flex items-center gap-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
                 `;
-                feedContainer.appendChild(item);
+                container.appendChild(div);
             });
-
-            updateMapIncidentMarkers();
         }
 
         function filterIncidents(cat) {
-            activeFilter = cat;
-            document.querySelectorAll('#incident-filters button').forEach(btn => {
-                if (btn.innerText.trim() === cat) {
-                    btn.className = "filter-btn active bg-blue-600 text-white px-2.5 py-0.5 rounded-full font-medium";
+            appState.incFilter = cat;
+            saveStateToStorage();
+
+            ['Semua', 'Kecelakaan', 'Banjir', 'Kebakaran'].forEach(c => {
+                const btn = document.getElementById(`btnIncFilter${c}`);
+                if (c.toLowerCase() === cat.toLowerCase()) {
+                    if (btn) btn.className = "px-2.5 py-1 text-xs rounded bg-blue-600 text-white font-semibold shadow";
                 } else {
-                    btn.className = "filter-btn bg-navy-700 hover:bg-navy-600 text-slate-300 px-2.5 py-0.5 rounded-full";
+                    if (btn) btn.className = "px-2.5 py-1 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 font-medium";
                 }
             });
-            renderIncidents();
-        }
 
-        function addIncidentReport(e) {
-            e.preventDefault();
-            const title = document.getElementById('input-incident-title').value;
-            const category = document.getElementById('input-incident-cat').value;
-            const location = document.getElementById('input-incident-loc').value;
-            const status = document.getElementById('input-incident-status').value;
-            const officer = document.getElementById('input-incident-officer').value || 'Petugas Menuju Lokasi';
-
-            const latVal = parseFloat(document.getElementById('input-incident-lat').value);
-            const lngVal = parseFloat(document.getElementById('input-incident-lng').value);
-
-            let statusColor = 'bg-blue-500/20 text-blue-400 border-blue-500/40';
-            if (status === 'Kritis') statusColor = 'bg-rose-500/20 text-rose-400 border-rose-500/40';
-            if (status === 'Penanganan') statusColor = 'bg-amber-500/20 text-amber-400 border-amber-500/40';
-
-            const newIncident = {
-                id: Date.now(),
-                title,
-                category,
-                location,
-                timeAgo: 'Baru saja',
-                status,
-                statusColor,
-                officer,
-                lat: !isNaN(latVal) ? latVal : -3.1326,
-                lng: !isNaN(lngVal) ? lngVal : 104.7536
-            };
-
-            incidents.unshift(newIncident);
-            saveToStorage(STORAGE_KEYS.INCIDENTS, incidents);
-
-            renderIncidents();
-            closeModal('reportModal');
-            showToast("Laporan kejadian tersimpan di LocalStorage!");
-            document.getElementById('reportForm').reset();
+            renderIncidentsList();
         }
 
         function deleteIncident(id) {
-            incidents = incidents.filter(i => i.id !== id);
-            saveToStorage(STORAGE_KEYS.INCIDENTS, incidents);
-            renderIncidents();
-            showToast("Laporan berhasil dihapus & tersimpan!");
-        }
-
-        function resetIncidentsFilter() {
-            filterIncidents('Semua');
-            showToast("Filter laporan direset");
-        }
-
-        function focusMapLoc(lat, lng) {
-            if (mapInstance) {
-                mapInstance.setView([lat, lng], 14);
-                showToast(`Fokus ke lokasi (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+            if (confirm("Hapus laporan kejadian ini?")) {
+                appState.incidents = appState.incidents.filter(x => x.id !== id);
+                saveStateToStorage();
+                renderIncidentsList();
+                updateMapMarkers();
             }
         }
 
-        /* ----------------------------------------------------
-           7. TRAFFIC SERVICES BY YEAR & LOCALSTORAGE
-        ---------------------------------------------------- */
-        function selectServiceYear(year) {
-            selectedServiceYear = year;
-            saveToStorage(STORAGE_KEYS.SELECTED_YEAR, year);
+        // RENDER SERVICE SECTION & TABLE
+        function renderServiceSection() {
+            const yr = appState.activeYear;
+            const records = appState.serviceRecords[yr] || [];
 
-            // Update UI Button Styles
-            const btn2026 = document.getElementById('year-btn-2026');
-            const btn2027 = document.getElementById('year-btn-2027');
+            // Calculate totals for active year
+            let totalD = 0, totalB = 0, totalR = 0, totalM = 0;
+            records.forEach(r => {
+                totalD += parseInt(r.derek || 0);
+                totalB += parseInt(r.bbm || 0);
+                totalR += parseInt(r.roda || 0);
+                totalM += parseInt(r.mesin || 0);
+            });
 
-            if (year === '2026') {
-                btn2026.className = "year-btn px-2.5 py-1 rounded-md font-semibold text-xs transition bg-blue-600 text-white shadow";
-                btn2027.className = "year-btn px-2.5 py-1 rounded-md font-semibold text-xs transition text-slate-400 hover:text-white";
+            document.getElementById('totalDerek').innerText = totalD;
+            document.getElementById('totalBbm').innerText = totalB;
+            document.getElementById('totalRoda').innerText = totalR;
+            document.getElementById('totalMesin').innerText = totalM;
+
+            // Sort records
+            const sortOrder = appState.serviceSortOrder || 'desc';
+            const sortedRecords = [...records].sort((a, b) => {
+                const dateA = new Date(a.tanggal);
+                const dateB = new Date(b.tanggal);
+                return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+            });
+
+            // Update Sort Button Highlight
+            const btnDesc = document.getElementById('btnSortDesc');
+            const btnAsc = document.getElementById('btnSortAsc');
+            if (sortOrder === 'desc') {
+                btnDesc.className = "px-2.5 py-1 text-xs rounded font-bold bg-emerald-600 text-white shadow";
+                btnAsc.className = "px-2.5 py-1 text-xs rounded font-medium text-gray-400 hover:bg-gray-700";
             } else {
-                btn2027.className = "year-btn px-2.5 py-1 rounded-md font-semibold text-xs transition bg-blue-600 text-white shadow";
-                btn2026.className = "year-btn px-2.5 py-1 rounded-md font-semibold text-xs transition text-slate-400 hover:text-white";
+                btnDesc.className = "px-2.5 py-1 text-xs rounded font-medium text-gray-400 hover:bg-gray-700";
+                btnAsc.className = "px-2.5 py-1 text-xs rounded font-bold bg-emerald-600 text-white shadow";
             }
 
-            // Update Table Headers and Footers
-            document.getElementById('table-year-badge').innerText = `TAHUN ${year}`;
-            document.getElementById('footer-year-label').innerText = year;
-
-            renderServiceTable();
-            showToast(`Menampilkan data pelayanan lalu lintas tahun ${year}`);
-        }
-
-        function renderServiceTable() {
-            const tbody = document.getElementById('service-table-body');
+            // Render Table
+            const tbody = document.getElementById('serviceTableBody');
             tbody.innerHTML = '';
 
-            // Filter service data by the selected year (with fallback to 2026 if not specified)
-            const filteredData = serviceData.filter(item => (item.year || '2026') === selectedServiceYear);
-
-            if (filteredData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-500 text-xs">Belum ada data pelayanan untuk tahun ${selectedServiceYear}.</td></tr>`;
-            } else {
-                filteredData.forEach((row, idx) => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-navy-700/40 transition border-b border-slate-800/80";
-                    tr.innerHTML = `
-                        <td class="p-2 text-center text-slate-400 font-semibold">${idx + 1}</td>
-                        <td class="p-2 font-medium text-slate-200">${row.date}</td>
-                        <td class="p-2 text-center text-blue-400">${row.penderekan}</td>
-                        <td class="p-2 text-center text-emerald-400">${row.bbm}</td>
-                        <td class="p-2 text-center text-amber-400">${row.roda}</td>
-                        <td class="p-2 text-center text-rose-400">${row.mesin}</td>
-                        <td class="p-2 text-center">
-                            <button onclick="deleteServiceRow(${row.id})" class="text-rose-400 hover:text-rose-300 p-1 rounded hover:bg-rose-950/50">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+            if (sortedRecords.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-500 italic">Tidak ada data pelayanan untuk tahun ${yr}</td></tr>`;
+                return;
             }
 
-            calculateServiceTotals(filteredData);
+            sortedRecords.forEach((r, index) => {
+                const dateFormatted = new Date(r.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-800/50 transition";
+                tr.innerHTML = `
+                    <td class="px-3 py-2 text-center text-gray-400">${index + 1}</td>
+                    <td class="px-3 py-2 font-mono text-gray-200">${dateFormatted}</td>
+                    <td class="px-3 py-2 text-center font-semibold text-blue-400">${r.derek}</td>
+                    <td class="px-3 py-2 text-center font-semibold text-emerald-400">${r.bbm}</td>
+                    <td class="px-3 py-2 text-center font-semibold text-amber-400">${r.roda}</td>
+                    <td class="px-3 py-2 text-center font-semibold text-red-400">${r.mesin}</td>
+                    <td class="px-3 py-2 text-center">
+                        <button onclick="deleteServiceRecord(${r.id})" class="text-red-400 hover:text-red-300 text-xs p-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
-        function calculateServiceTotals(dataList) {
-            const list = dataList || serviceData.filter(item => (item.year || '2026') === selectedServiceYear);
-            
-            const totPenderekan = list.reduce((acc, curr) => acc + curr.penderekan, 0);
-            const totBbm = list.reduce((acc, curr) => acc + curr.bbm, 0);
-            const totRoda = list.reduce((acc, curr) => acc + curr.roda, 0);
-            const totMesin = list.reduce((acc, curr) => acc + curr.mesin, 0);
-
-            document.getElementById('count-penderekan').innerText = `${totPenderekan} Layanan`;
-            document.getElementById('count-bbm').innerText = `${totBbm} Layanan`;
-            document.getElementById('count-roda').innerText = `${totRoda} Layanan`;
-            document.getElementById('count-mesin').innerText = `${totMesin} Layanan`;
+        function toggleDateSort(order) {
+            appState.serviceSortOrder = order;
+            saveStateToStorage();
+            renderServiceSection();
         }
 
-        function addServiceData(e) {
-            e.preventDefault();
-            const yearVal = document.getElementById('input-service-year').value;
-            const dateVal = document.getElementById('input-service-date').value;
-            const p = parseInt(document.getElementById('input-penderekan').value) || 0;
-            const b = parseInt(document.getElementById('input-bbm').value) || 0;
-            const r = parseInt(document.getElementById('input-roda').value) || 0;
-            const m = parseInt(document.getElementById('input-mesin').value) || 0;
-
-            const parts = dateVal.split('-');
-            const formattedDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateVal;
-
-            const newRow = {
-                id: Date.now(),
-                year: yearVal,
-                date: formattedDate,
-                penderekan: p,
-                bbm: b,
-                roda: r,
-                mesin: m
-            };
-
-            serviceData.unshift(newRow);
-            saveToStorage(STORAGE_KEYS.SERVICES, serviceData);
-
-            // Switch view to match added item's year
-            selectServiceYear(yearVal);
-
-            closeModal('serviceModal');
-            showToast(`Data harian pelayanan tahun ${yearVal} berhasil disimpan!`);
-            document.getElementById('serviceForm').reset();
+        function deleteServiceRecord(id) {
+            if (confirm("Hapus baris data pelayanan harian ini?")) {
+                const yr = appState.activeYear;
+                appState.serviceRecords[yr] = appState.serviceRecords[yr].filter(r => r.id !== id);
+                saveStateToStorage();
+                renderServiceSection();
+            }
         }
 
-        function deleteServiceRow(id) {
-            serviceData = serviceData.filter(item => item.id !== id);
-            saveToStorage(STORAGE_KEYS.SERVICES, serviceData);
-            renderServiceTable();
-            showToast("Baris data pelayanan telah dihapus & disimpan");
+        // RENDER STANDBY VEHICLES
+        function renderStandbyVehicles() {
+            const container = document.getElementById('standbyVehicleContainer');
+            container.innerHTML = '';
+
+            appState.standbyVehicles.forEach(v => {
+                let badgeClass = 'bg-emerald-950 text-emerald-300 border-emerald-800';
+                if (v.status === 'Bertugas') badgeClass = 'bg-blue-950 text-blue-300 border-blue-800';
+                if (v.status === 'Maintenance') badgeClass = 'bg-amber-950 text-amber-300 border-amber-800';
+
+                const div = document.createElement('div');
+                div.className = "p-3 bg-gray-800/80 rounded-lg border border-gray-700 flex justify-between items-center gap-2";
+                div.innerHTML = `
+                    <div class="space-y-0.5">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">${v.nama}</span>
+                        </div>
+                        <p class="text-[11px] text-gray-400"><i class="fa-solid fa-user-shield text-amber-400"></i> ${v.petugas}</p>
+                        <p class="text-[11px] text-gray-400"><i class="fa-solid fa-location-dot text-blue-400"></i> ${v.lokasi}</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-1.5">
+                        <select onchange="updateVehicleStatus(${v.id}, this.value)" class="text-[11px] px-2 py-1 rounded border font-semibold focus:outline-none ${badgeClass}">
+                            <option value="Ready" ${v.status === 'Ready' ? 'selected' : ''}>Ready</option>
+                            <option value="Bertugas" ${v.status === 'Bertugas' ? 'selected' : ''}>Bertugas</option>
+                            <option value="Maintenance" ${v.status === 'Maintenance' ? 'selected' : ''}>Maintenance</option>
+                        </select>
+                        <button onclick="deleteVehicle(${v.id})" class="text-red-400 hover:text-red-300 text-[11px]">
+                            <i class="fa-solid fa-trash"></i> Hapus
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
         }
 
-        function syncTotals() {
-            calculateServiceTotals();
-            showToast(`Total layanan tahun ${selectedServiceYear} berhasil disinkronisasi`);
+        function updateVehicleStatus(id, newStatus) {
+            const veh = appState.standbyVehicles.find(v => v.id === id);
+            if (veh) {
+                veh.status = newStatus;
+                saveStateToStorage();
+                renderStandbyVehicles();
+            }
         }
 
-        /* ----------------------------------------------------
-           8. CHART.JS ANALYTICS & LOCALSTORAGE
-        ---------------------------------------------------- */
+        function deleteVehicle(id) {
+            if (confirm("Hapus kendaraan standby ini?")) {
+                appState.standbyVehicles = appState.standbyVehicles.filter(v => v.id !== id);
+                saveStateToStorage();
+                renderStandbyVehicles();
+            }
+        }
+
+        // RENDER CCTV & VMS DEVICES
+        function renderDeviceGrid() {
+            const container = document.getElementById('deviceGridContainer');
+            container.innerHTML = '';
+
+            const filtered = appState.devices.filter(d => {
+                if (appState.devFilter === 'semua') return true;
+                return d.jenis.toLowerCase() === appState.devFilter.toLowerCase();
+            });
+
+            // Calculate counters
+            const onlineCount = appState.devices.filter(d => d.status === 'Online').length;
+            const maintCount = appState.devices.filter(d => d.status === 'Maintenance').length;
+            const offlineCount = appState.devices.filter(d => d.status === 'Offline').length;
+
+            document.getElementById('cctvStatsOnline').innerText = `${onlineCount} Online`;
+            document.getElementById('cctvStatsMaint').innerText = `${maintCount} Maint`;
+            document.getElementById('cctvStatsOffline').innerText = `${offlineCount} Offline`;
+
+            filtered.forEach(d => {
+                let badgeStyle = 'bg-emerald-950 text-emerald-300 border-emerald-800';
+                if (d.status === 'Maintenance') badgeStyle = 'bg-amber-950 text-amber-300 border-amber-800';
+                if (d.status === 'Offline') badgeStyle = 'bg-red-950 text-red-300 border-red-800';
+
+                const div = document.createElement('div');
+                div.className = "p-3 bg-gray-800/80 rounded-lg border border-gray-700 flex flex-col justify-between space-y-2";
+                div.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start gap-1 mb-1">
+                            <span class="font-bold text-xs text-white">${d.nama}</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded font-mono bg-gray-900 text-gray-400 border border-gray-700 uppercase">${d.jenis}</span>
+                        </div>
+                        <p class="text-[11px] text-gray-400"><i class="fa-solid fa-map-pin text-emerald-400"></i> ${d.lokasi}</p>
+                        <p class="text-[11px] text-gray-500 font-mono">IP: ${d.ip}</p>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-2 border-t border-gray-700/60">
+                        <select onchange="updateDeviceStatus(${d.id}, this.value)" class="text-[11px] px-2 py-0.5 rounded border font-semibold focus:outline-none ${badgeStyle}">
+                            <option value="Online" ${d.status === 'Online' ? 'selected' : ''}>Online</option>
+                            <option value="Maintenance" ${d.status === 'Maintenance' ? 'selected' : ''}>Maintenance</option>
+                            <option value="Offline" ${d.status === 'Offline' ? 'selected' : ''}>Offline</option>
+                        </select>
+                        <button onclick="deleteDevice(${d.id})" class="text-red-400 hover:text-red-300 text-xs">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function filterDevices(jenis) {
+            appState.devFilter = jenis;
+            saveStateToStorage();
+
+            ['Semua', 'Cctv', 'Vms'].forEach(j => {
+                const btn = document.getElementById(`btnDevFilter${j}`);
+                if (j.toLowerCase() === jenis.toLowerCase()) {
+                    if (btn) btn.className = "px-3 py-1 rounded bg-blue-600 text-white font-semibold shadow";
+                } else {
+                    if (btn) btn.className = "px-3 py-1 rounded bg-gray-800 text-gray-300 border border-gray-700 font-medium hover:bg-gray-700";
+                }
+            });
+
+            renderDeviceGrid();
+        }
+
+        function updateDeviceStatus(id, newStatus) {
+            const dev = appState.devices.find(d => d.id === id);
+            if (dev) {
+                dev.status = newStatus;
+                saveStateToStorage();
+                renderDeviceGrid();
+            }
+        }
+
+        function deleteDevice(id) {
+            if (confirm("Hapus perangkat CCTV/VMS ini?")) {
+                appState.devices = appState.devices.filter(d => d.id !== id);
+                saveStateToStorage();
+                renderDeviceGrid();
+            }
+        }
+
+        // CHART.JS INITIALIZATION & UPDATES
         function initCharts() {
-            if (typeof ChartDataLabels !== 'undefined') {
-                Chart.register(ChartDataLabels);
-            }
-
-            // Bar Chart Configuration
-            const ctxBar = document.getElementById('barChart').getContext('2d');
-            barChartInstance = new Chart(ctxBar, {
+            // 1. Accident Bar Chart (2020 - 2027)
+            const ctxBar = document.getElementById('accidentBarChart').getContext('2d');
+            accidentChartInstance = new Chart(ctxBar, {
                 type: 'bar',
                 data: {
-                    labels: barLabels,
+                    labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027'],
                     datasets: [{
-                        label: 'Insiden Kecelakaan',
-                        data: barChartData,
-                        backgroundColor: '#ec4899',
-                        hoverBackgroundColor: '#f472b6',
-                        borderRadius: 4,
-                        barThickness: 16
+                        label: 'Jumlah Kejadian Kecelakaan',
+                        data: appState.accidentChart,
+                        backgroundColor: '#ef4444',
+                        borderColor: '#dc2626',
+                        borderWidth: 1,
+                        borderRadius: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    layout: {
-                        padding: {
-                            top: 20
-                        }
-                    },
                     plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#0b1021',
-                            titleColor: '#fff',
-                            bodyColor: '#cbd5e1',
-                            borderColor: '#334155',
-                            borderWidth: 1
-                        },
-                        datalabels: {
-                            anchor: 'end',
-                            align: 'top',
-                            color: '#ec4899',
-                            font: {
-                                weight: 'bold',
-                                size: 11
-                            },
-                            formatter: function(value) {
-                                return value;
-                            }
-                        }
+                        legend: { display: false }
                     },
                     scales: {
                         x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                            ticks: { color: '#9ca3af', font: { size: 11 } },
+                            grid: { color: '#1f2937' }
                         },
                         y: {
-                            grid: { color: 'rgba(51, 65, 85, 0.4)' },
-                            ticks: { color: '#94a3b8', font: { size: 10 }, stepSize: 10 },
+                            ticks: { color: '#9ca3af', font: { size: 11 } },
+                            grid: { color: '#1f2937' },
                             beginAtZero: true
                         }
                     }
                 }
             });
 
-            // Pie Chart Configuration
-            const ctxPie = document.getElementById('pieChart').getContext('2d');
-            pieChartInstance = new Chart(ctxPie, {
+            // 2. Vehicle Class Pie Chart (Gol 1 - 5)
+            const ctxPie = document.getElementById('vehiclePieChart').getContext('2d');
+            vehiclePieChartInstance = new Chart(ctxPie, {
                 type: 'pie',
                 data: {
-                    labels: pieLabels,
+                    labels: ['Golongan 1', 'Golongan 2', 'Golongan 3', 'Golongan 4', 'Golongan 5'],
                     datasets: [{
-                        data: pieChartData,
-                        backgroundColor: [
-                            '#3b82f6', // Gol 1 - Blue
-                            '#f97316', // Gol 2 - Orange
-                            '#cbd5e1', // Gol 3 - Slate Light
-                            '#eab308', // Gol 4 - Yellow
-                            '#06b6d4'  // Gol 5 - Cyan
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#0b1021'
+                        data: appState.pieChart,
+                        backgroundColor: ['#3b82f6', '#f97316', '#eab308', '#06b6d4', '#ec4899'],
+                        borderWidth: 1,
+                        borderColor: '#111827'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        datalabels: {
-                            display: false
-                        },
                         legend: {
                             position: 'right',
-                            labels: {
-                                color: '#cbd5e1',
-                                font: { size: 10 },
-                                boxWidth: 12,
-                                padding: 8
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: '#0b1021',
-                            borderColor: '#334155',
-                            borderWidth: 1
+                            labels: { color: '#d1d5db', font: { size: 10 } }
                         }
                     }
                 }
             });
         }
 
-        // Edit Bar Chart Modal
-        function openBarChartModal() {
-            const container = document.getElementById('bar-inputs');
-            container.innerHTML = '';
-            barLabels.forEach((lbl, idx) => {
-                container.innerHTML += `
-                    <div class="flex items-center justify-between gap-2">
-                        <label class="text-slate-300">Tahun ${lbl}:</label>
-                        <input type="number" id="bar-val-${idx}" value="${barChartData[idx]}" class="w-24 bg-navy-900 border border-slate-700 rounded p-1 text-slate-200">
-                    </div>
-                `;
-            });
-            openModal('chartBarModal');
-        }
-
-        function saveBarChartData() {
-            barLabels.forEach((_, idx) => {
-                const val = parseInt(document.getElementById(`bar-val-${idx}`).value) || 0;
-                barChartData[idx] = val;
-            });
-
-            saveToStorage(STORAGE_KEYS.BAR_CHART, barChartData);
-            barChartInstance.data.datasets[0].data = barChartData;
-            barChartInstance.update();
-            closeModal('chartBarModal');
-            showToast("Grafik Kecelakaan tersimpan di LocalStorage!");
-        }
-
-        function resetBarChart() {
-            barChartData = [...DEFAULT_BAR_DATA];
-            saveToStorage(STORAGE_KEYS.BAR_CHART, barChartData);
-            barChartInstance.data.datasets[0].data = barChartData;
-            barChartInstance.update();
-            showToast("Data grafik kecelakaan direset ke default");
-        }
-
-        // Edit Pie Chart Modal
-        function openPieChartModal() {
-            const container = document.getElementById('pie-inputs');
-            container.innerHTML = '';
-            pieLabels.forEach((lbl, idx) => {
-                container.innerHTML += `
-                    <div class="flex items-center justify-between gap-2">
-                        <label class="text-slate-300">${lbl} (%):</label>
-                        <input type="number" id="pie-val-${idx}" value="${pieChartData[idx]}" class="w-24 bg-navy-900 border border-slate-700 rounded p-1 text-slate-200">
-                    </div>
-                `;
-            });
-            openModal('chartPieModal');
-        }
-
-        function savePieChartData() {
-            pieLabels.forEach((_, idx) => {
-                const val = parseInt(document.getElementById(`pie-val-${idx}`).value) || 0;
-                pieChartData[idx] = val;
-            });
-
-            saveToStorage(STORAGE_KEYS.PIE_CHART, pieChartData);
-            pieChartInstance.data.datasets[0].data = pieChartData;
-            pieChartInstance.update();
-            closeModal('chartPieModal');
-            showToast("Data Golongan Kendaraan tersimpan!");
-        }
-
-        function resetPieChart() {
-            pieChartData = [...DEFAULT_PIE_DATA];
-            saveToStorage(STORAGE_KEYS.PIE_CHART, pieChartData);
-            pieChartInstance.data.datasets[0].data = pieChartData;
-            pieChartInstance.update();
-            showToast("Data persentase golongan direset ke default");
-        }
-
-        /* ----------------------------------------------------
-           9. RESET ALL DATA TO INITIAL DEFAULTS
-        ---------------------------------------------------- */
-        function resetToInitialDefaults() {
-            if (confirm("Apakah Anda yakin ingin mereset seluruh data kembali ke pengaturan awal default?")) {
-                localStorage.removeItem(STORAGE_KEYS.HEADER);
-                localStorage.removeItem(STORAGE_KEYS.SERVICES);
-                localStorage.removeItem(STORAGE_KEYS.INCIDENTS);
-                localStorage.removeItem(STORAGE_KEYS.BAR_CHART);
-                localStorage.removeItem(STORAGE_KEYS.PIE_CHART);
-                localStorage.removeItem(STORAGE_KEYS.SELECTED_YEAR);
-
-                headerState = { ...DEFAULT_HEADER };
-                serviceData = [ ...DEFAULT_SERVICES ];
-                incidents = [ ...DEFAULT_INCIDENTS ];
-                barChartData = [ ...DEFAULT_BAR_DATA ];
-                pieChartData = [ ...DEFAULT_PIE_DATA ];
-                selectedServiceYear = '2026';
-
-                renderHeader();
-                selectServiceYear('2026');
-                renderIncidents();
-
-                barChartInstance.data.datasets[0].data = barChartData;
-                barChartInstance.update();
-
-                pieChartInstance.data.datasets[0].data = pieChartData;
-                pieChartInstance.update();
-
-                closeModal('headerModal');
-                showToast("Seluruh data telah di-reset ke nilai default awal!");
+        function updateChartsData() {
+            if (accidentChartInstance) {
+                accidentChartInstance.data.datasets[0].data = appState.accidentChart;
+                accidentChartInstance.update();
+            }
+            if (vehiclePieChartInstance) {
+                vehiclePieChartInstance.data.datasets[0].data = appState.pieChart;
+                vehiclePieChartInstance.update();
             }
         }
 
-        /* ----------------------------------------------------
-           10. INITIALIZATION ON LOAD
-        ---------------------------------------------------- */
-        window.onload = function() {
-            renderHeader();
-            initMap();
-            renderIncidents();
-            selectServiceYear(selectedServiceYear);
-            initCharts();
 
-            // Modal backdrop listener
-            document.onclick = function(e) {
-                if (e.target.id === 'chartBarModal') closeModal('chartBarModal');
-                if (e.target.id === 'chartPieModal') closeModal('chartPieModal');
-                if (e.target.id === 'headerModal') closeModal('headerModal');
-                if (e.target.id === 'serviceModal') closeModal('serviceModal');
-                if (e.target.id === 'reportModal') closeModal('reportModal');
+        // ==================== MODAL CONTROLLER & HANDLERS ====================
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // OPEN KPI EDIT MODAL
+        function openKpiModal(target) {
+            document.getElementById('kpiTargetField').value = target;
+            
+            // Hide all groups first
+            ['groupKpiVolume', 'groupKpiSpeed', 'groupKpiLos', 'groupKpiIncident'].forEach(g => {
+                document.getElementById(g).classList.add('hidden');
+            });
+
+            const k = appState.kpi;
+            if (target === 'volume') {
+                document.getElementById('modalKpiTitle').innerHTML = '<i class="fa-solid fa-car text-blue-400"></i> Edit Volume Kendaraan';
+                document.getElementById('groupKpiVolume').classList.remove('hidden');
+                document.getElementById('inputVolumeVal').value = k.volume;
+                document.getElementById('inputVolumeStatus').value = k.volumeStatus;
+            } else if (target === 'speed') {
+                document.getElementById('modalKpiTitle').innerHTML = '<i class="fa-solid fa-gauge-high text-amber-400"></i> Edit Kecepatan Rata-Rata';
+                document.getElementById('groupKpiSpeed').classList.remove('hidden');
+                document.getElementById('inputSpeedVal').value = k.speed;
+                document.getElementById('inputSpeedStatus').value = k.speedStatus;
+            } else if (target === 'los') {
+                document.getElementById('modalKpiTitle').innerHTML = '<i class="fa-solid fa-chart-line text-emerald-400"></i> Edit Tingkat Pelayanan (LOS)';
+                document.getElementById('groupKpiLos').classList.remove('hidden');
+                document.getElementById('inputLosCat').value = k.losCat;
+                document.getElementById('inputLosStatus').value = k.losStatus;
+            } else if (target === 'incident') {
+                document.getElementById('modalKpiTitle').innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-400"></i> Edit Summary Insiden Aktif';
+                document.getElementById('groupKpiIncident').classList.remove('hidden');
+                document.getElementById('inputIncTitle').value = k.incTitle;
+                document.getElementById('inputIncHuman').value = k.incHuman;
+                document.getElementById('inputIncRoad').value = k.incRoad;
+                document.getElementById('inputIncVeh').value = k.incVeh;
+                document.getElementById('inputIncLr').value = k.incLr;
+                document.getElementById('inputIncLb').value = k.incLb;
+                document.getElementById('inputIncMd').value = k.incMd;
             }
-        };
+
+            openModal('modalEditKpi');
+        }
+
+        function saveKpiData(event) {
+            event.preventDefault();
+            const target = document.getElementById('kpiTargetField').value;
+            const k = appState.kpi;
+
+            if (target === 'volume') {
+                k.volume = parseInt(document.getElementById('inputVolumeVal').value) || 0;
+                k.volumeStatus = document.getElementById('inputVolumeStatus').value || 'Normal';
+            } else if (target === 'speed') {
+                k.speed = parseInt(document.getElementById('inputSpeedVal').value) || 0;
+                k.speedStatus = document.getElementById('inputSpeedStatus').value || 'Normal';
+            } else if (target === 'los') {
+                k.losCat = document.getElementById('inputLosCat').value;
+                k.losStatus = document.getElementById('inputLosStatus').value;
+            } else if (target === 'incident') {
+                k.incTitle = document.getElementById('inputIncTitle').value;
+                k.incHuman = parseInt(document.getElementById('inputIncHuman').value) || 0;
+                k.incRoad = parseInt(document.getElementById('inputIncRoad').value) || 0;
+                k.incVeh = parseInt(document.getElementById('inputIncVeh').value) || 0;
+                k.incLr = parseInt(document.getElementById('inputIncLr').value) || 0;
+                k.incLb = parseInt(document.getElementById('inputIncLb').value) || 0;
+                k.incMd = parseInt(document.getElementById('inputIncMd').value) || 0;
+            }
+
+            saveStateToStorage();
+            renderKpiCards();
+            closeModal('modalEditKpi');
+        }
+
+        // SAVE INCIDENT REPORT
+        function saveIncident(event) {
+            event.preventDefault();
+            const newInc = {
+                id: Date.now(),
+                judul: document.getElementById('incJudul').value,
+                kategori: document.getElementById('incKategori').value,
+                lokasi: document.getElementById('incLokasi').value,
+                lat: parseFloat(document.getElementById('incLat').value),
+                lng: parseFloat(document.getElementById('incLng').value),
+                keparahan: document.getElementById('incKeparahan').value,
+                status: document.getElementById('incStatus').value
+            };
+
+            appState.incidents.unshift(newInc);
+            saveStateToStorage();
+            renderIncidentsList();
+            updateMapMarkers();
+            closeModal('modalAddIncident');
+        }
+
+        // SAVE DAILY SERVICE RECORD
+        function saveServiceRecord(event) {
+            event.preventDefault();
+            const yr = appState.activeYear;
+            const newRec = {
+                id: Date.now(),
+                tanggal: document.getElementById('servTanggal').value,
+                derek: parseInt(document.getElementById('servDerek').value) || 0,
+                bbm: parseInt(document.getElementById('servBbm').value) || 0,
+                roda: parseInt(document.getElementById('servRoda').value) || 0,
+                mesin: parseInt(document.getElementById('servMesin').value) || 0
+            };
+
+            if (!appState.serviceRecords[yr]) appState.serviceRecords[yr] = [];
+            appState.serviceRecords[yr].push(newRec);
+
+            saveStateToStorage();
+            renderServiceSection();
+            closeModal('modalAddService');
+        }
+
+        // SAVE STANDBY VEHICLE
+        function saveVehicle(event) {
+            event.preventDefault();
+            const newVeh = {
+                id: Date.now(),
+                nama: document.getElementById('vehNama').value,
+                petugas: document.getElementById('vehPetugas').value,
+                lokasi: document.getElementById('vehLokasi').value,
+                status: document.getElementById('vehStatus').value
+            };
+
+            appState.standbyVehicles.unshift(newVeh);
+            saveStateToStorage();
+            renderStandbyVehicles();
+            closeModal('modalAddVehicle');
+        }
+
+        // SAVE DEVICE (CCTV / VMS)
+        function saveDevice(event) {
+            event.preventDefault();
+            const newDev = {
+                id: Date.now(),
+                jenis: document.getElementById('devJenis').value,
+                nama: document.getElementById('devNama').value,
+                lokasi: document.getElementById('devLokasi').value,
+                ip: document.getElementById('devIp').value,
+                status: document.getElementById('devStatus').value
+            };
+
+            appState.devices.unshift(newDev);
+            saveStateToStorage();
+            renderDeviceGrid();
+            closeModal('modalAddDevice');
+        }
+
+        // OPEN & SAVE ACCIDENT BAR CHART (2020-2027)
+        function saveAccidentChartData(event) {
+            event.preventDefault();
+            appState.accidentChart = [
+                parseInt(document.getElementById('accVal2020').value) || 0,
+                parseInt(document.getElementById('accVal2021').value) || 0,
+                parseInt(document.getElementById('accVal2022').value) || 0,
+                parseInt(document.getElementById('accVal2023').value) || 0,
+                parseInt(document.getElementById('accVal2024').value) || 0,
+                parseInt(document.getElementById('accVal2025').value) || 0,
+                parseInt(document.getElementById('accVal2026').value) || 0,
+                parseInt(document.getElementById('accVal2027').value) || 0
+            ];
+
+            saveStateToStorage();
+            updateChartsData();
+            closeModal('modalEditAccidentChart');
+        }
+
+        // OPEN & SAVE VEHICLE CLASS PIE CHART
+        function savePieChartData(event) {
+            event.preventDefault();
+            appState.pieChart = [
+                parseInt(document.getElementById('pieGol1').value) || 0,
+                parseInt(document.getElementById('pieGol2').value) || 0,
+                parseInt(document.getElementById('pieGol3').value) || 0,
+                parseInt(document.getElementById('pieGol4').value) || 0,
+                parseInt(document.getElementById('pieGol5').value) || 0
+            ];
+
+            saveStateToStorage();
+            updateChartsData();
+            closeModal('modalEditPieChart');
+        }
+
+        // PRE-FILL ACCIDENT FORM ON OPEN
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('[onclick*="modalEditAccidentChart"]')) {
+                const arr = appState.accidentChart;
+                document.getElementById('accVal2020').value = arr[0] || 0;
+                document.getElementById('accVal2021').value = arr[1] || 0;
+                document.getElementById('accVal2022').value = arr[2] || 0;
+                document.getElementById('accVal2023').value = arr[3] || 0;
+                document.getElementById('accVal2024').value = arr[4] || 0;
+                document.getElementById('accVal2025').value = arr[5] || 0;
+                document.getElementById('accVal2026').value = arr[6] || 0;
+                document.getElementById('accVal2027').value = arr[7] || 0;
+            }
+            if (e.target.closest('[onclick*="modalEditPieChart"]')) {
+                const arr = appState.pieChart;
+                document.getElementById('pieGol1').value = arr[0] || 0;
+                document.getElementById('pieGol2').value = arr[1] || 0;
+                document.getElementById('pieGol3').value = arr[2] || 0;
+                document.getElementById('pieGol4').value = arr[3] || 0;
+                document.getElementById('pieGol5').value = arr[4] || 0;
+            }
+        });
     </script>
 </body>
 </html>
